@@ -1,9 +1,9 @@
 # AGENTS.md
 
 ## Layout (easy to get wrong)
-- The git repo and Django project live in `agence/` **under** the workspace root `E:\Django\Agence_de_voyage`. `manage.py` is at `agence/manage.py` — run commands from there, not the workspace root.
-- Git remote `origin` → `https://github.com/ingfou-cpu/agence_api.git` (branch `main`).
-- The venv `env/` is a **sibling of the repo** (at `E:\Django\Agence_de_voyage\env`, outside git). It has no full activation context in fresh shells; call it directly:
+- The git repo now lives at the **workspace root** `E:\Django\Agence_de_voyage` and contains both `agence/` (Django backend) and `frotend/` (React/Vite frontend). `manage.py` is at `agence/manage.py` — run commands from `agence/`, not the workspace root.
+- Git remote `origin` → `https://github.com/ingfou-cpu/django-react.git` (branch `main`). The old backend-only repo `ingfou-cpu/agence_api.git` still exists on GitHub but is no longer the remote; `agence/.git` was removed when the combined repo was created.
+- The venv `env/` is a sibling of the repo (at `E:\Django\Agence_de_voyage\env`, ignored by the root `.gitignore`). It has no full activation context in fresh shells; call it directly:
   `& "E:\Django\Agence_de_voyage\env\Scripts\python.exe" manage.py ...` (Python 3.14.5, Django 6).
 - Two apps: `Agapp` (main travel site — **blog included**, just `blog_list`/`blog_detail` in `Agapp/views.py`, no separate blog app) and `weatherapp` (OpenWeather lookup). Project config lives in `agence/`.
 
