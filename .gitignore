@@ -30,3 +30,5 @@ skills-lock.json
 .idea/
 .vscode/
 .DS_Store
+.aidesigner/*
+!.aidesigner/.gitkeep

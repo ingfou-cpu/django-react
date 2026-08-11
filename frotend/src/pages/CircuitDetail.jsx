@@ -50,13 +50,18 @@ export default function CircuitDetail() {
     e.preventDefault();
     setError('');
     try {
-      await api.createCircuitBooking({
+      const result = await api.createCircuitBooking({
         pack_travel: Number(id),
         customer_name: form.customer_name,
         customer_email: form.customer_email,
         phone_number: form.phone_number,
       });
-      setSaved(t('circuit.detail.saved'));
+      // Rediriger vers la page de confirmation circuit
+      if (result?.id) {
+        window.location.href = `/circuit/confirmation/${result.id}/`;
+      } else {
+        setSaved(t('circuit.detail.saved'));
+      }
     } catch (err) {
       setError(err.message);
     }

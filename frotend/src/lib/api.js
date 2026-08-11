@@ -58,6 +58,7 @@ export const api = {
   blogPosts: (q = '') => listAll('/blog-posts', q),
   blogComments: (q = '') => listAll('/blog-comments', q),
   bookings: (q = '') => listAll('/bookings', q),
+  booking: (id) => get(`/bookings/${id}/`),
   paymentRecords: (q = '') => listAll('/payment-records', q),
   contacts: (body) => post('/contacts/', body),
   testimonials: (q = '') => listAll('/testimonials', q),

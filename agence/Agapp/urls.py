@@ -85,6 +85,10 @@ urlpatterns = [
     # Récap avant paiement
     path('booking/recap/<int:destination_id>/', views.booking_recap, name='booking_recap'),
 
+    # Confirmation de réservation + paiement
+    path('booking/confirmation/<int:booking_id>/', views.booking_confirmation, name='booking_confirmation'),
+    path('circuit/confirmation/<int:circuit_booking_id>/', views.circuit_confirmation, name='circuit_confirmation'),
+
     # Changement de langue
     path('lang/<str:lang_code>/', views.set_language, name='set_language'),
 ]

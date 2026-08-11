@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../lib/i18n.jsx';
+import { useVariant } from '../hooks/useVariant.js';
+import { getTheme } from '../lib/themes.jsx';
 import { api } from '../lib/api.js';
 
 export default function Footer() {
   const { t } = useLanguage();
+  const { variant } = useVariant();
+  const pattern = getTheme(variant).pattern;
   const [email, setEmail] = useState('');
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
@@ -22,8 +26,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-auto border-t border-forest-dark/5 bg-forest-darker text-sand-light">
-      <div className="container-site grid gap-10 py-12 md:grid-cols-3">
+    <footer className="relative mt-auto overflow-hidden border-t border-forest-dark/5 bg-forest-darker text-sand-light">
+      <div className={`pointer-events-none absolute inset-0 ${pattern} opacity-70`} />
+      <div className="container-site relative grid gap-10 py-12 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-copper-gradient text-white">
@@ -33,6 +38,7 @@ export default function Footer() {
               El Bayadh <span className="text-copper-light">Travels</span>
             </span>
           </div>
+          <p className="mt-3 font-arabic text-base leading-relaxed text-gold/90">الجزائر</p>
           <p className="mt-3 text-sm text-sand-dark">{t('footer.tagline')}</p>
           <a href="mailto:contact@elbayadhtravels.dz" className="mt-3 inline-flex items-center gap-2 text-sm text-sand-dark hover:text-copper-light">
             <i className="bi bi-envelope"></i> contact@elbayadhtravels.dz
@@ -83,7 +89,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-white/5 py-5">
+      <div className="relative border-t border-white/5 py-5">
         <div className="container-site flex flex-col items-center justify-between gap-2 text-xs text-sand-dark sm:flex-row">
           <span>
             {t('footer.copyright')} © {new Date().getFullYear()} — {t('footer.rights')}

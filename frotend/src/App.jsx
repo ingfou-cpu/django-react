@@ -24,8 +24,9 @@ const Login = lazy(() => import('./pages/Login.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
 const Profile = lazy(() => import('./pages/Profile.jsx'));
 const PaymentHome = lazy(() => import('./pages/PaymentHome.jsx'));
-const BookingRecap = lazy(() => import('./pages/BookingRecap.jsx'));
+const PaymentHistory = lazy(() => import('./pages/PaymentHistory.jsx'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess.jsx'));
+const HadjOmra = lazy(() => import('./pages/HadjOmra.jsx'));
 const PaymentCancel = lazy(() => import('./pages/PaymentCancel.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
@@ -48,6 +49,7 @@ function App() {
             <Route path="/reselieuChoisi/:id/" element={<DestinationDetail />} />
             <Route path="/circuit/" element={<Circuits />} />
             <Route path="/circuitChoisi/:id/" element={<CircuitDetail />} />
+            <Route path="/hadj-omra/" element={<HadjOmra />} />
             <Route path="/croisiere/" element={<Croisiere />} />
             <Route path="/reservCroisiere/:id/" element={<CircuitDetail />} />
             <Route path="/blog/" element={<Blog />} />
@@ -63,7 +65,7 @@ function App() {
             <Route path="/register/" element={<Register />} />
             <Route path="/profile/" element={<Profile />} />
             <Route path="/payment/" element={<PaymentHome />} />
-            <Route path="/booking/recap/:id/" element={<BookingRecap />} />
+            <Route path="/payment/history/" element={<PaymentHistory />} />
             <Route path="/payment/success/" element={<PaymentSuccess />} />
             <Route path="/payment/cancel/" element={<PaymentCancel />} />
             <Route path="*" element={<NotFound />} />

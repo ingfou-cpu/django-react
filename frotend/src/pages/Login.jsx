@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.jsx';
+import AuthLayout from '../components/AuthLayout.jsx';
 import Spinner from '../components/Spinner.jsx';
 import { useLanguage } from '../lib/i18n.jsx';
 
@@ -28,8 +29,8 @@ export default function Login() {
   };
 
   return (
-    <section className="container-site flex justify-center py-20">
-      <div className="card w-full max-w-md p-8">
+    <AuthLayout>
+      <div className="card p-8">
         <div className="text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-copper/10 text-2xl text-copper">
             <i className="bi bi-box-arrow-in-right"></i>
@@ -82,6 +83,6 @@ export default function Login() {
           </Link>
         </p>
       </div>
-    </section>
+    </AuthLayout>
   );
 }

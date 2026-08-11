@@ -26,6 +26,9 @@ VOTRE_CLE_API_FIXER = os.getenv('VOTRE_CLE_API_FIXER', '')
 # URL de base du frontend React (SPA) pour les redirections Stripe
 FRONTEND_BASE_URL = os.getenv('FRONTEND_BASE_URL', 'http://localhost:5173')
 
+# URL de base du backend Django (pour les liens "Retour à l'accueil" depuis les templates)
+BACKEND_BASE_URL = os.getenv('BACKEND_BASE_URL', 'http://127.0.0.1:8000')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -115,6 +118,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
+                'Agapp.context_processors.backend_url',
             ],
         },
     },
@@ -197,5 +201,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 HANDLER404 = 'Agapp.views.handler404'
 
 #SECURE_SSL_REDIRECT = True #Redirige tout le trafic HTTP vers HTTPS:
-SECURE_SESSION_COOKIE = True # Empêche l'envoi des cookies de session via une connexion non chiffrée.
-SECURE_CSRF_COOKIE = True # Empêche l'envoi des cookies CSRF via une connexion non chiffrée.
+SECURE_SESSION_COOKIE = not DEBUG # Secure uniquement en HTTPS (False en dev HTTP, True en prod)
+SECURE_CSRF_COOKIE = not DEBUG # Secure uniquement en HTTPS (False en dev HTTP, True en prod)

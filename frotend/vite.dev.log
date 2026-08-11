@@ -1,0 +1,251 @@
+
+> el-bayadh-travels-frontend@1.0.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 1344 ms
+
+  ➜  Local:   http://127.0.0.1:5173/
+  ➜  press h + enter to show help
+19:55:48 [vite] hmr update /src/App.jsx, /src/index.css
+19:55:48 [vite] Internal server error: Failed to resolve import "axios" from "src/App.jsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: E:/Django/Agence_de_voyage/frotend/src/App.jsx:8:18
+  22 |  import Spinner from "./components/Spinner.jsx";
+  23 |  import { useState, useEffect } from "react";
+  24 |  import axios from "axios";
+     |                     ^
+  25 |  const Home = lazy(_c = () => import("./pages/Home.jsx"));
+  26 |  _c2 = Home;
+      at TransformPluginContext._formatError (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 10)
+      at async TransformPluginContext.transform (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///E:/Django/Agence_de_voyage/frotend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+19:56:54 [vite] page reload src/App.jsx
+19:56:54 [vite] Pre-transform error: E:\Django\Agence_de_voyage\frotend\src\App.jsx: Identifier 'App' has already been declared. (82:9)
+
+  80 | export default App;
+  81 |
+> 82 | function App() {
+     |          ^
+  83 |   const [items, setItems] = useState([]);
+  84 |
+  85 |   useEffect(() => {
+19:56:54 [vite] Internal server error: E:\Django\Agence_de_voyage\frotend\src\App.jsx: Identifier 'App' has already been declared. (82:9)
+
+  80 | export default App;
+  81 |
+> 82 | function App() {
+     |          ^
+  83 |   const [items, setItems] = useState([]);
+  84 |
+  85 |   useEffect(() => {
+  Plugin: vite:react-babel
+  File: E:/Django/Agence_de_voyage/frotend/src/App.jsx:82:9
+  80 |  export default App;
+  81 |  
+  82 |  function App() {
+     |           ^
+  83 |    const [items, setItems] = useState([]);
+  84 |  
+      at constructor (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:369:19)
+      at JSXParserMixin.raise (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:6620:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1623:19)
+      at ScopeHandler.declareName (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1589:12)
+      at JSXParserMixin.registerFunctionStatementId (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13495:16)
+      at JSXParserMixin.parseFunction (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13479:12)
+      at JSXParserMixin.parseFunctionStatement (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13154:17)
+      at JSXParserMixin.parseStatementContent (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12820:21)
+      at JSXParserMixin.parseStatementLike (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12796:17)
+      at JSXParserMixin.parseModuleItem (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12773:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13345:36)
+      at JSXParserMixin.parseBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13338:10)
+      at JSXParserMixin.parseProgram (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12651:10)
+      at JSXParserMixin.parseTopLevel (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12641:25)
+      at JSXParserMixin.parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14517:25)
+      at parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14551:38)
+      at parser (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:261:32)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:189:28
+      at E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:113:33
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:287:14)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+19:57:07 [vite] Internal server error: E:\Django\Agence_de_voyage\frotend\src\App.jsx: Identifier 'App' has already been declared. (82:9)
+
+  80 | export default App;
+  81 |
+> 82 | function App() {
+     |          ^
+  83 |   const [items, setItems] = useState([]);
+  84 |
+  85 |   useEffect(() => {
+  Plugin: vite:react-babel
+  File: E:/Django/Agence_de_voyage/frotend/src/App.jsx:82:9
+  80 |  export default App;
+  81 |  
+  82 |  function App() {
+     |           ^
+  83 |    const [items, setItems] = useState([]);
+  84 |  
+      at constructor (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:369:19)
+      at JSXParserMixin.raise (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:6620:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1623:19)
+      at ScopeHandler.declareName (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1589:12)
+      at JSXParserMixin.registerFunctionStatementId (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13495:16)
+      at JSXParserMixin.parseFunction (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13479:12)
+      at JSXParserMixin.parseFunctionStatement (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13154:17)
+      at JSXParserMixin.parseStatementContent (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12820:21)
+      at JSXParserMixin.parseStatementLike (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12796:17)
+      at JSXParserMixin.parseModuleItem (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12773:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13345:36)
+      at JSXParserMixin.parseBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13338:10)
+      at JSXParserMixin.parseProgram (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12651:10)
+      at JSXParserMixin.parseTopLevel (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12641:25)
+      at JSXParserMixin.parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14517:25)
+      at parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14551:38)
+      at parser (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:261:32)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:189:28
+      at E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:113:33
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:287:14)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+19:57:40 [vite] page reload src/App.jsx
+19:57:41 [vite] Pre-transform error: E:\Django\Agence_de_voyage\frotend\src\App.jsx: Identifier 'App' has already been declared. (82:9)
+
+  80 | export default App;
+  81 |
+> 82 | function App() {
+     |          ^
+  83 |   const [items, setItems] = useState([]);
+  84 |
+  85 |   useEffect(() => {
+19:57:41 [vite] Internal server error: E:\Django\Agence_de_voyage\frotend\src\App.jsx: Identifier 'App' has already been declared. (82:9)
+
+  80 | export default App;
+  81 |
+> 82 | function App() {
+     |          ^
+  83 |   const [items, setItems] = useState([]);
+  84 |
+  85 |   useEffect(() => {
+  Plugin: vite:react-babel
+  File: E:/Django/Agence_de_voyage/frotend/src/App.jsx:82:9
+  80 |  export default App;
+  81 |  
+  82 |  function App() {
+     |           ^
+  83 |    const [items, setItems] = useState([]);
+  84 |  
+      at constructor (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:369:19)
+      at JSXParserMixin.raise (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:6620:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1623:19)
+      at ScopeHandler.declareName (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1589:12)
+      at JSXParserMixin.registerFunctionStatementId (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13495:16)
+      at JSXParserMixin.parseFunction (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13479:12)
+      at JSXParserMixin.parseFunctionStatement (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13154:17)
+      at JSXParserMixin.parseStatementContent (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12820:21)
+      at JSXParserMixin.parseStatementLike (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12796:17)
+      at JSXParserMixin.parseModuleItem (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12773:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13345:36)
+      at JSXParserMixin.parseBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13338:10)
+      at JSXParserMixin.parseProgram (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12651:10)
+      at JSXParserMixin.parseTopLevel (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12641:25)
+      at JSXParserMixin.parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14517:25)
+      at parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14551:38)
+      at parser (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:261:32)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:189:28
+      at E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:113:33
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:287:14)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+19:57:44 [vite] Internal server error: E:\Django\Agence_de_voyage\frotend\src\App.jsx: Identifier 'App' has already been declared. (82:9)
+
+  80 | export default App;
+  81 |
+> 82 | function App() {
+     |          ^
+  83 |   const [items, setItems] = useState([]);
+  84 |
+  85 |   useEffect(() => {
+  Plugin: vite:react-babel
+  File: E:/Django/Agence_de_voyage/frotend/src/App.jsx:82:9
+  80 |  export default App;
+  81 |  
+  82 |  function App() {
+     |           ^
+  83 |    const [items, setItems] = useState([]);
+  84 |  
+      at constructor (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:369:19)
+      at JSXParserMixin.raise (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:6620:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1623:19)
+      at ScopeHandler.declareName (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:1589:12)
+      at JSXParserMixin.registerFunctionStatementId (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13495:16)
+      at JSXParserMixin.parseFunction (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13479:12)
+      at JSXParserMixin.parseFunctionStatement (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13154:17)
+      at JSXParserMixin.parseStatementContent (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12820:21)
+      at JSXParserMixin.parseStatementLike (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12796:17)
+      at JSXParserMixin.parseModuleItem (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12773:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13345:36)
+      at JSXParserMixin.parseBlockBody (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:13338:10)
+      at JSXParserMixin.parseProgram (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12651:10)
+      at JSXParserMixin.parseTopLevel (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:12641:25)
+      at JSXParserMixin.parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14517:25)
+      at parse (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\parser\lib\index.js:14551:38)
+      at parser (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:261:32)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:189:28
+      at E:\Django\Agence_de_voyage\frotend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:113:33
+      at step (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:287:14)
+      at E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\Django\Agence_de_voyage\frotend\node_modules\gensync\index.js:223:11)
+20:01:29 [vite] page reload src/App.jsx
+20:01:29 [vite] page reload src/App.jsx

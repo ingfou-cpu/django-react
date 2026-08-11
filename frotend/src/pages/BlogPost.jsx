@@ -4,6 +4,7 @@ import api from '../lib/api.js';
 import { mediaUrl, formatDate, truncate } from '../lib/format.jsx';
 import Spinner from '../components/Spinner.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import Reveal from '../components/Reveal.jsx';
 import { useLanguage } from '../lib/i18n.jsx';
 
 export default function BlogPost() {
@@ -96,12 +97,14 @@ export default function BlogPost() {
           <p className="mt-4 text-lg italic text-forest-dark/60 dark:text-sand-dark">{post.excerpt}</p>
         )}
         {post.image && (
-          <img src={mediaUrl(post.image)} alt={post.title} className="mt-8 max-h-[26rem] w-full rounded-3xl object-cover shadow-soft" />
+          <Reveal variant="image">
+            <img src={mediaUrl(post.image)} alt={post.title} className="mt-8 max-h-[26rem] w-full rounded-3xl object-cover shadow-soft" />
+          </Reveal>
         )}
 
         <div className="mt-8 space-y-5 leading-relaxed text-forest-dark/80 dark:text-sand-dark">
           {paragraphs.length
-            ? paragraphs.map((p, i) => <p key={i}>{p}</p>)
+            ? paragraphs.map((p, i) => <p key={i} className={i === 0 ? 'drop-cap' : undefined}>{p}</p>)
             : post.content}
         </div>
 

@@ -64,7 +64,8 @@ export default function Profile() {
   return (
     <section className="container-site py-16">
       <div className="card overflow-hidden">
-        <div className="bg-gradient-to-r from-forest-darker to-forest-dark p-8 text-sand-light">
+        <div className="bg-gradient-to-r from-forest-darker to-forest-dark p-8 text-sand-light relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 pattern-zellige opacity-30" />
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-copper-gradient text-2xl text-white">

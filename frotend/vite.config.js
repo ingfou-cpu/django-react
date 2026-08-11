@@ -7,6 +7,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '127.0.0.1',
     port: 5173,
     strictPort: true,
     proxy: {
@@ -15,6 +16,8 @@ export default defineConfig({
       '/static': { target: 'http://127.0.0.1:8000', changeOrigin: true },
       '/payment/checkout': { target: 'http://127.0.0.1:8000', changeOrigin: true },
       '/payment/webhook': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/booking/confirmation': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/circuit/confirmation': { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
 });

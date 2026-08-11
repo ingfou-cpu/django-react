@@ -63,7 +63,7 @@ export default function DestinationDetail() {
     e.preventDefault();
     setError('');
     try {
-      await api.createBooking({
+      const result = await api.createBooking({
         destination: Number(id),
         hotel: form.hotel ? Number(form.hotel) : null,
         customer_name: form.customer_name,
@@ -72,7 +72,12 @@ export default function DestinationDetail() {
         check_out_date: form.check_out ? `${form.check_out}T00:00:00` : null,
         means_of_transport: form.means_of_transport,
       });
-      setSaved(t('detail.savedMessage'));
+      // Rediriger vers la page de confirmation Django (via le proxy Vite)
+      if (result?.id) {
+        window.location.href = `/booking/confirmation/${result.id}/`;
+      } else {
+        setSaved(t('detail.savedMessage'));
+      }
     } catch (err) {
       setError(err.message);
     }

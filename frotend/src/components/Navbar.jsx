@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../lib/i18n.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { useTheme } from '../hooks/useTheme.js';
+import ThemeVariantSwitcher from './ThemeVariantSwitcher.jsx';
 
 const primaryLinks = [
   { to: '/', key: 'nav.home', icon: 'bi-house-door' },
@@ -13,6 +14,7 @@ const primaryLinks = [
 ];
 
 const moreLinks = [
+  { to: '/hadj-omra/', key: 'nav.pilgrimage', icon: 'bi-moon-stars' },
   { to: '/map/', key: 'nav.map', icon: 'bi-map' },
   { to: '/search/', key: 'nav.search', icon: 'bi-search' },
   { to: '/weather/', key: 'nav.weather', icon: 'bi-cloud-sun' },
@@ -23,6 +25,7 @@ const moreLinks = [
 ];
 
 const paymentsLink = { to: '/payment/', key: 'nav.payments', icon: 'bi-credit-card' };
+const paymentHistoryLink = { to: '/payment/history/', key: 'nav.paymentHistory', icon: 'bi-clock-history' };
 
 export default function Navbar() {
   const { t, lang, setLang } = useLanguage();
@@ -47,6 +50,26 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  /* Hide on scroll down, show on scroll up */
+  const lastScrollY = useRef(0);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = headerRef.current;
+      if (!el) return;
+      const y = window.scrollY;
+      if (y > 80 && y > lastScrollY.current) {
+        el.style.transform = 'translateY(-100%)';
+      } else {
+        el.style.transform = 'translateY(0)';
+      }
+      lastScrollY.current = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const handleLang = (e) => setLang(e.target.value);
 
   const handleLogout = async () => {
@@ -62,7 +85,7 @@ export default function Navbar() {
     }`;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-forest-dark/5 bg-cream/80 backdrop-blur-lg dark:border-white/5 dark:bg-forest-darker/80">
+    <header ref={headerRef} className="sticky top-0 z-50 border-b border-forest-dark/5 bg-cream/80 backdrop-blur-lg dark:border-white/5 dark:bg-forest-darker/80 transition-transform duration-300">
       <nav className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 xl:px-10">
         <Link to="/" className="flex items-center gap-2" aria-label={t('nav.home')}>
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-copper-gradient text-white shadow-glow">
@@ -119,9 +142,21 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-2 xl:flex">
-          <Link to={paymentsLink.to} className="btn-outline !px-4 !py-2">
-            <i className={`bi ${paymentsLink.icon}`}></i> {t(paymentsLink.key)}
-          </Link>
+          <div className="relative group">
+            <button className="btn-outline !px-4 !py-2 flex items-center gap-1.5">
+              <i className={`bi ${paymentsLink.icon}`}></i> {t(paymentsLink.key)}
+              <i className="bi bi-chevron-down text-[10px]"></i>
+            </button>
+            <div className="absolute right-0 top-full z-50 mt-1 hidden min-w-[180px] rounded-xl border border-forest-dark/10 bg-white py-1 shadow-lg group-hover:block dark:border-white/10 dark:bg-forest-darker">
+              <Link to={paymentsLink.to} className="flex items-center gap-2 px-4 py-2.5 text-sm text-forest-dark/80 transition hover:bg-forest-dark/5 dark:text-sand-dark dark:hover:bg-white/5">
+                <i className={`bi ${paymentsLink.icon}`}></i> {t(paymentsLink.key)}
+              </Link>
+              <Link to={paymentHistoryLink.to} className="flex items-center gap-2 px-4 py-2.5 text-sm text-forest-dark/80 transition hover:bg-forest-dark/5 dark:text-sand-dark dark:hover:bg-white/5">
+                <i className={`bi ${paymentHistoryLink.icon}`}></i> {t(paymentHistoryLink.key)}
+              </Link>
+            </div>
+          </div>
+          <ThemeVariantSwitcher />
           <button
             onClick={toggle}
             aria-label="Basculer le thème"
@@ -156,6 +191,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 xl:hidden">
+          <ThemeVariantSwitcher compact />
           <button
             onClick={toggle}
             aria-label="Basculer le thème"
@@ -176,7 +212,7 @@ export default function Navbar() {
       {open && (
         <div className="border-t border-forest-dark/5 bg-cream dark:border-white/5 dark:bg-forest-darker xl:hidden">
           <div className="grid gap-1 px-4 py-4 sm:px-6 xl:px-10">
-            {[...primaryLinks, ...moreLinks, paymentsLink].map((l) => (
+            {[...primaryLinks, ...moreLinks].map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}

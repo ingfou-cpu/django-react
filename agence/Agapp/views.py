@@ -226,9 +226,13 @@ def reservation(request):
 
 
 def reselieuChoisi(request, destination_id):
+    """Page de réservation pour une destination.
+    Après soumission du formulaire : crée la réservation, puis redirige
+    vers la page de confirmation从中 le client pourra lancer le paiement."""
     destination = Destination.objects.get(id=destination_id)
     hotels = Hotel.objects.filter(destination=destination)
     confirmation_message = None
+    created_booking = None
 
     # Récupérer la météo de la destination (avec cache session TTL 1h)
     DEST_WEATHER_TTL = 3600
@@ -273,9 +277,18 @@ def reselieuChoisi(request, destination_id):
                 means_of_transport=means_of_transport
             )
             booking.save()
-            confirmation_message = "✅ Votre réservation a été confirmée avec succès !"
+            created_booking = booking
+            # Stocker l'ID et les infos client dans la session pour la page de confirmation
+            request.session['pending_booking_id'] = booking.id
+            request.session['pending_customer_name'] = name
+            request.session['pending_customer_email'] = email
+            request.session['pending_customer_phone'] = phone_number
         except Hotel.DoesNotExist:
             confirmation_message = "❌ Erreur : l'hôtel sélectionné n'existe pas."
+
+    # Si une réservation vient d'être créée, rediriger vers la confirmation
+    if created_booking:
+        return redirect('booking_confirmation', booking_id=created_booking.id)
 
     return render(request, 'reselieuChoisi.html', {
         'destination': destination,
@@ -286,6 +299,9 @@ def reselieuChoisi(request, destination_id):
 
 
 def reservCroisiere(request, pack_travel_id):
+    """Réservation de croisière/circuit en 2 étapes.
+    Étape 1 : calcul du prix. Étape 2 : confirmation → redirection
+    vers la page de confirmation circuit."""
     pack_travel_instance = get_object_or_404(pack_travel, id=pack_travel_id)
     customer_name = ''
     customer_email = ''
@@ -320,7 +336,7 @@ def reservCroisiere(request, pack_travel_id):
                     phone_number=phone_number,
                 )
                 reservation.save()
-                confirmation_message = "✅ Votre réservation de croisière a été confirmée avec succès !"
+                return redirect('circuit_confirmation', circuit_booking_id=reservation.id)
             except Exception as e:
                 confirmation_message = f"❌ Erreur lors de la réservation : {str(e)}"
 
@@ -357,10 +373,11 @@ class circuitChoisiView(DetailView):
     context_object_name = 'pack_travels'
 
     def post(self, request, *args, **kwargs):
-        """Gérer la soumission du formulaire de réservation"""
+        """Gérer la soumission du formulaire de réservation.
+        Après création, rediriger vers la page de confirmation circuit."""
         self.object = self.get_object()
         pack_travel_instance = self.object
-        
+
         name = request.POST.get('customer_name')
         email = request.POST.get('customer_email')
         phone_number = request.POST.get('phone_number')
@@ -373,7 +390,9 @@ class circuitChoisiView(DetailView):
                 pack_travel=pack_travel_instance
             )
             reservation.save()
-            messages.success(request, "✅ Votre réservation a été confirmée avec succès !")
+            # Stocker les infos dans la session pour la confirmation
+            request.session['pending_circuit_booking_id'] = reservation.id
+            return redirect('circuit_confirmation', circuit_booking_id=reservation.id)
         except Exception as e:
             messages.error(request, f"❌ Erreur : {str(e)}")
 
@@ -435,29 +454,35 @@ def convertir_devise(request):
 
 def latest_rates_api(request):
     """API endpoint qui retourne les derniers taux de change. Utilise Fixer si la clé
-    est configurée (supporte DZD/MAD/TND), sinon Frankfurter (gratuite, sans clé)."""
+    est configurée (supporte DZD/MAD/TND), sinon Frankfurter (gratuite, sans clé).
+    Si Fixer échoue, fallback automatique vers Frankfurter."""
     from_currency = request.GET.get('from', 'EUR')
     symbols = request.GET.get('symbols', 'USD,EUR,DZD,GBP,CHF,MAD,TND,CNY,JPY,CAD')
 
     api_key = getattr(settings, 'VOTRE_CLE_API_FIXER', '')
 
+    # Liste des providers à essayer dans l'ordre
+    providers = []
     if api_key:
-        url = f'http://data.fixer.io/api/latest?access_key={api_key}&symbols={symbols}'
-    else:
-        url = f'https://api.frankfurter.app/latest?from={from_currency}&symbols={symbols}'
+        providers.append(('Fixer', f'http://data.fixer.io/api/latest?access_key={api_key}&symbols={symbols}'))
+    providers.append(('Frankfurter', f'https://api.frankfurter.app/latest?from={from_currency}&symbols={symbols}'))
 
-    try:
-        response = requests.get(url, timeout=10)
-        data = response.json()
+    last_error = None
+    for name, url in providers:
+        try:
+            response = requests.get(url, timeout=10)
+            data = response.json()
 
-        if response.status_code == 200 and 'rates' in data:
-            return JsonResponse({'success': True, 'base': data.get('base', from_currency), 'date': data.get('date'), 'rates': data['rates']})
-        elif response.status_code == 200 and data.get('success') is False:
-            return JsonResponse({'success': False, 'error': data.get('error', {}).get('info', 'Erreur API')})
-        else:
-            return JsonResponse({'success': False, 'error': 'Impossible de récupérer les taux de change'})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+            if response.status_code == 200 and 'rates' in data:
+                return JsonResponse({'success': True, 'base': data.get('base', from_currency), 'date': data.get('date'), 'rates': data['rates']})
+            elif response.status_code == 200 and data.get('success') is False:
+                last_error = data.get('error', {}).get('info', f'Erreur {name}')
+            else:
+                last_error = f'Erreur {name} (HTTP {response.status_code})'
+        except Exception as e:
+            last_error = str(e)
+
+    return JsonResponse({'success': False, 'error': last_error or 'Impossible de récupérer les taux de change'})
 
 
 def historical_rates_api(request):
@@ -502,13 +527,33 @@ def payment_home(request):
     return render(request, 'payment_home.html', context)
 
 
+def _get_stripe_base_url(request):
+    """Retourne l'URL de base en fonction de l'origine de la requête.
+    Si la requête vient du frontend React (Referer = :5173), on redirige
+    vers le frontend. Sinon, on reste dans le backend Django."""
+    referer = request.META.get('HTTP_REFERER', '')
+    frontend_port = settings.FRONTEND_BASE_URL.split(':')[-1].rstrip('/')
+    if frontend_port in referer:
+        return settings.FRONTEND_BASE_URL
+    return settings.BACKEND_BASE_URL
+
+
 def create_checkout_destination(request, destination_id):
-    """Crée une session de paiement Stripe pour une destination"""
+    """Crée une session de paiement Stripe pour une destination.
+    Si un booking_id est fourni (via la session ou le POST), il est
+    passé dans les métadonnées Stripe pour que le webhook puisse
+    lier le paiement à la réservation existante."""
     if request.method != "POST":
         return redirect('payment_home')
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY # 
+    stripe.api_key = settings.STRIPE_SECRET_KEY
     destination = get_object_or_404(Destination, id=destination_id)
+
+    # Déterminer l'URL de redirection selon l'origine (frontend ou backend)
+    base_url = _get_stripe_base_url(request)
+
+    # Récupérer un éventuel booking_id (depuis la session Django ou le POST)
+    booking_id = request.POST.get('booking_id', '') or request.session.pop('booking_id', '')
 
     try:
         checkout_session = stripe.checkout.Session.create(
@@ -526,11 +571,12 @@ def create_checkout_destination(request, destination_id):
                 }
             ],
             mode="payment",
-            success_url=f"{settings.FRONTEND_BASE_URL}/payment/success/?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{settings.FRONTEND_BASE_URL}/payment/cancel/",
+            success_url=f"{base_url}/payment/success/?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{base_url}/payment/cancel/",
             metadata={
                 'type': 'destination',
                 'destination_id': destination.id,
+                'booking_id': str(booking_id),
                 'customer_name': request.POST.get('customer_name', ''),
                 'customer_email': request.POST.get('customer_email', ''),
                 'customer_phone': request.POST.get('customer_phone', ''),
@@ -560,12 +606,20 @@ def create_checkout_destination(request, destination_id):
 
 
 def create_checkout_pack(request, pack_id):
-    """Crée une session de paiement Stripe pour un pack/circuit"""
+    """Crée une session de paiement Stripe pour un pack/circuit.
+    Si un circuit_booking_id est fourni, il est passé dans les métadonnées
+    Stripe pour que le webhook puisse lier le paiement à la réservation."""
     if request.method != "POST":
         return redirect('payment_home')
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
     pack = get_object_or_404(pack_travel, id=pack_id)
+
+    # Déterminer l'URL de redirection selon l'origine (frontend ou backend)
+    base_url = _get_stripe_base_url(request)
+
+    # Récupérer un éventuel circuit_booking_id
+    circuit_booking_id = request.POST.get('circuit_booking_id', '') or request.session.pop('circuit_booking_id', '')
 
     try:
         checkout_session = stripe.checkout.Session.create(
@@ -583,11 +637,12 @@ def create_checkout_pack(request, pack_id):
                 }
             ],
             mode="payment",
-            success_url=f"{settings.FRONTEND_BASE_URL}/payment/success/?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{settings.FRONTEND_BASE_URL}/payment/cancel/",
+            success_url=f"{base_url}/payment/success/?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{base_url}/payment/cancel/",
             metadata={
                 'type': 'pack',
                 'pack_id': pack.id,
+                'circuit_booking_id': str(circuit_booking_id),
                 'customer_name': request.POST.get('customer_name', ''),
                 'customer_email': request.POST.get('customer_email', ''),
                 'customer_phone': request.POST.get('customer_phone', ''),
@@ -617,7 +672,10 @@ def create_checkout_pack(request, pack_id):
 
 
 def payment_success(request):
-    """Page de succès après un paiement Stripe"""
+    """Page de succès après un paiement Stripe.
+    Fallback : si le webhook n'a pas encore créé le Booking, on le
+    crée ici pour garantir que la page de confirmation peut afficher
+    les détails de la réservation."""
     session_id = request.GET.get('session_id')
     payment_record = None
 
@@ -629,21 +687,28 @@ def payment_success(request):
             payment_record.status = 'completed'
             payment_record.save()
 
-            # Créer la réservation automatiquement
-            if payment_record.destination and payment_record.customer_name:
-                Booking.objects.create(
+            # Créer la réservation uniquement si elle n'existe pas encore
+            if not payment_record.booking_id and payment_record.destination and payment_record.customer_name:
+                booking = Booking.objects.create(
                     destination=payment_record.destination,
                     customer_name=payment_record.customer_name,
                     customer_email=payment_record.customer_email,
                     phone_number=payment_record.customer_phone,
                 )
-            elif payment_record.pack and payment_record.customer_name:
-                reser_circuit.objects.create(
+                payment_record.booking = booking
+                payment_record.save()
+                logger.info(f"Booking #{booking.id} created from payment_success for session {session_id}")
+
+            elif not payment_record.reser_circuit_id and payment_record.pack and payment_record.customer_name:
+                circuit_booking = reser_circuit.objects.create(
                     pack_travel=payment_record.pack,
                     customer_name=payment_record.customer_name,
                     customer_email=payment_record.customer_email,
                     phone_number=payment_record.customer_phone,
                 )
+                payment_record.reser_circuit = circuit_booking
+                payment_record.save()
+                logger.info(f"ReserCircuit #{circuit_booking.id} created from payment_success for session {session_id}")
 
         except PaymentRecord.DoesNotExist:
             logger.warning(f"Payment record not found: {session_id}")
@@ -692,13 +757,64 @@ def stripe_webhook(request):
 
 
 def handle_checkout_completed(session):
-    """Gère l'événement checkout.session.completed"""
+    """Gère l'événement checkout.session.completed.
+    Crée la réservation (Booking / reser_circuit) si elle n'existe pas
+    encore et la lie au PaymentRecord pour que la page de confirmation
+    puisse afficher « Réservation effectuée avec paiement réussi »."""
     session_id = session.get('id')
     try:
         payment = PaymentRecord.objects.get(stripe_checkout_session_id=session_id)
         payment.status = 'completed'
         payment.stripe_customer_id = session.get('customer', '')
         payment.stripe_payment_intent_id = session.get('payment_intent', '')
+        meta = session.get('metadata', {})
+
+        # ── Destination : lier ou créer le Booking ──
+        if not payment.booking_id:
+            booking_id = meta.get('booking_id', '')
+            if booking_id:
+                try:
+                    existing_booking = Booking.objects.get(id=int(booking_id))
+                    payment.booking = existing_booking
+                    logger.info(f"Booking #{booking_id} linked to payment {session_id}")
+                except (Booking.DoesNotExist, ValueError):
+                    pass
+
+            if not payment.booking_id:
+                dest_id = meta.get('destination_id')
+                if dest_id:
+                    booking = Booking.objects.create(
+                        destination_id=int(dest_id),
+                        customer_name=meta.get('customer_name', ''),
+                        customer_email=meta.get('customer_email', ''),
+                        phone_number=meta.get('customer_phone', ''),
+                    )
+                    payment.booking = booking
+                    logger.info(f"Booking #{booking.id} created from payment {session_id}")
+
+        # ── Pack/Circuit : lier ou créer le reser_circuit ──
+        if not payment.reser_circuit_id:
+            circuit_booking_id = meta.get('circuit_booking_id', '')
+            if circuit_booking_id:
+                try:
+                    existing_circuit = reser_circuit.objects.get(id=int(circuit_booking_id))
+                    payment.reser_circuit = existing_circuit
+                    logger.info(f"ReserCircuit #{circuit_booking_id} linked to payment {session_id}")
+                except (reser_circuit.DoesNotExist, ValueError):
+                    pass
+
+            if not payment.reser_circuit_id:
+                pack_id = meta.get('pack_id')
+                if pack_id:
+                    circuit = reser_circuit.objects.create(
+                        pack_travel_id=int(pack_id),
+                        customer_name=meta.get('customer_name', ''),
+                        customer_email=meta.get('customer_email', ''),
+                        phone_number=meta.get('customer_phone', ''),
+                    )
+                    payment.reser_circuit = circuit
+                    logger.info(f"ReserCircuit #{circuit.id} created from payment {session_id}")
+
         payment.save()
         logger.info(f"Payment completed: {session_id}")
     except PaymentRecord.DoesNotExist:
@@ -853,6 +969,37 @@ def booking_recap(request, destination_id):
     return render(request, 'booking_recap.html', {
         'destination': destination,
         'hotels': hotels,
+    })
+
+
+def booking_confirmation(request, booking_id):
+    """Page de confirmation affichée après la création d'une réservation.
+    Affiche les détails de la réservation et un bouton pour lancer le paiement."""
+    booking = get_object_or_404(Booking, id=booking_id)
+    payment = PaymentRecord.objects.filter(booking=booking).first()
+
+    # Vérifier si le paiement a déjà été effectué
+    payment_done = payment and payment.status == 'completed'
+
+    return render(request, 'booking_confirmation.html', {
+        'booking': booking,
+        'payment': payment,
+        'payment_done': payment_done,
+    })
+
+
+def circuit_confirmation(request, circuit_booking_id):
+    """Page de confirmation pour les réservations de circuits/croisières.
+    Affiche les détails et un bouton pour lancer le paiement."""
+    circuit_booking = get_object_or_404(reser_circuit, id=circuit_booking_id)
+    payment = PaymentRecord.objects.filter(reser_circuit=circuit_booking).first()
+
+    payment_done = payment and payment.status == 'completed'
+
+    return render(request, 'circuit_confirmation.html', {
+        'circuit_booking': circuit_booking,
+        'payment': payment,
+        'payment_done': payment_done,
     })
 
 #-------------------Changement de langue-------------------------------------------------------#
