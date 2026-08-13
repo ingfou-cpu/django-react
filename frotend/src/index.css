@@ -271,6 +271,23 @@
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'><g fill='none' stroke='rgba(255,255,255,0.05)'><path d='M0 10 Q 15 4 30 10 T 60 10 T 90 10 T 120 10'/><path d='M0 30 Q 15 24 30 30 T 60 30 T 90 30 T 120 30'/><path d='M0 50 Q 15 44 30 50 T 60 50 T 90 50 T 120 50'/></g></svg>");
     background-size: 120px 60px;
   }
+  @keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    animation: marqueeScroll 42s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes kenburns {
+    from { transform: scale(1.15); }
+    to   { transform: scale(1); }
+  }
+  .kenburns {
+    animation: kenburns 9s ease-out forwards;
+  }
 }
 
 .leaflet-container {

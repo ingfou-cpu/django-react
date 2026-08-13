@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 /**
  * Floating pill to flip between the accueil design variants.
  * Shown only on the home route (rendered by App). "Actuel" is the
- * production Home.jsx; v1 / v2 / v3 are the alternative concepts.
+ * production Home.jsx; v1 / v2 / v3 / v4 / v5 are the alternative concepts.
  */
 const VARIANTS = [
   { v: null, label: 'Actuel' },
   { v: '1', label: 'V1' },
   { v: '2', label: 'V2' },
   { v: '3', label: 'V3' },
+  { v: '4', label: 'V4' },
+  { v: '5', label: 'V5' },
 ];
 
 export default function HomeVariantSwitcher({ activeV }) {

@@ -10,6 +10,8 @@ const Home = lazy(() => import('./pages/Home.jsx'));
 const HomeV1 = lazy(() => import('./pages/HomeV1.jsx'));
 const HomeV2 = lazy(() => import('./pages/HomeV2.jsx'));
 const HomeV3 = lazy(() => import('./pages/HomeV3.jsx'));
+const HomeV4 = lazy(() => import('./pages/HomeV4.jsx'));
+const HomeV5 = lazy(() => import('./pages/HomeV5.jsx'));
 const Destinations = lazy(() => import('./pages/Destinations.jsx'));
 const DestinationDetail = lazy(() => import('./pages/DestinationDetail.jsx'));
 const Circuits = lazy(() => import('./pages/Circuits.jsx'));
@@ -36,14 +38,14 @@ const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
 /**
  * Home route: renders the current accueil by default, or an alternative
- * concept via ?v=1|2|3. A floating switcher lets reviewers flip between
+ * concept via ?v=1|2|3|4|5. A floating switcher lets reviewers flip between
  * them without editing the URL.
  */
 function HomeRoute() {
   const [params] = useSearchParams();
   const v = params.get('v');
-  const activeV = v === '1' || v === '2' || v === '3' ? v : null;
-  const HomePage = activeV === '1' ? HomeV1 : activeV === '2' ? HomeV2 : activeV === '3' ? HomeV3 : Home;
+  const activeV = v === '1' || v === '2' || v === '3' || v === '4' || v === '5' ? v : null;
+  const HomePage = activeV === '1' ? HomeV1 : activeV === '2' ? HomeV2 : activeV === '3' ? HomeV3 : activeV === '4' ? HomeV4 : activeV === '5' ? HomeV5 : Home;
 
   return (
     <>
