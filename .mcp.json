@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "aidesigner": {
-      "command": "npx",
-      "args": ["-y", "@aidesigner/agent-skills", "mcp"]
+      "type": "http",
+      "url": "https://api.aidesigner.ai/api/v1/mcp"
     }
   }
 }

@@ -1,0 +1,12 @@
+
+> open-design@0.18.2 tools-dev E:\Django\Agence_de_voyage\open-design
+> pnpm exec tools-dev "run" "web"
+
+
+  Open Design dev server ready
+
+  ➜  Web:    http://127.0.0.1:50163/
+  ➜  Daemon: http://127.0.0.1:50162/
+
+  Press Ctrl+C to stop
+
