@@ -10,46 +10,55 @@ import CtaBanner from '../components/CtaBanner.jsx';
 import Spinner from '../components/Spinner.jsx';
 
 /* ------------------------------------------------------------------ */
-/*  V1 — Éditorial galerie                                             */
-/*  Airy magazine look on sand/cream. Staggered gallery hero, editorial */
-/*  numbering, thin rules, generous whitespace.                         */
+/*  V1 — Éditorial Saharien                                           */
+/*  Inspired by terres-touareg.com: immersive full-bleed hero, refined */
+/*  sand/terracotta palette, editorial serif headlines, thin rules,    */
+/*  generous whitespace, arch-masked imagery and zellige textures.     */
 /* ------------------------------------------------------------------ */
 
-/* ---------------------------- Hero collage ------------------------- */
+/* ---------------------------- Hero -------------------------------- */
 
 function Hero({ t, destinations }) {
   const [main, ...stack] = destinations;
   const second = stack[0];
+  const featured = main;
 
   return (
-    <section className="relative overflow-hidden bg-cream dark:bg-forest-darker pt-24 lg:pt-28 pb-16 lg:pb-24">
-      {/* faint zellige texture in the corner */}
-      <div className="pointer-events-none absolute -top-24 -end-24 w-[34rem] h-[34rem] opacity-[0.06] pattern-zellige" />
+    <section className="relative w-full h-[100svh] min-h-[760px] flex items-center overflow-hidden bg-cream dark:bg-forest-darker">
+      {/* Background desert photography with parallax */}
+      <div className="absolute inset-0 z-0">
+        {featured ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center scale-110"
+            style={{ backgroundImage: `url(${mediaUrl(featured.image)})` }}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1682687982185-531d09ec56fc?q=80&w=2940&auto=format&fit=crop')] bg-cover bg-center scale-110" />
+        )}
+        {/* Editorial gradient overlays for readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/40 to-transparent dark:from-forest-darker dark:via-forest-darker/40" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-cream to-transparent dark:from-forest-darker" />
+      </div>
 
-      <div className="container-site relative grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-        {/* Text column */}
-        <div className="lg:col-span-5 z-10">
+      <div className="relative z-10 w-full container-site flex flex-col justify-between h-full pb-16 pt-28">
+        <div className="max-w-3xl">
           <Reveal>
-            <div className="flex items-center gap-4 mb-7">
-              <span className="h-px w-10 bg-terracotta" />
-              <span className="text-xs font-bold uppercase tracking-[0.25em] text-terracotta">
-                {t('home.hero2.kicker')}
-              </span>
-            </div>
+            <p className="text-[0.75rem] uppercase tracking-[0.25em] text-forest-dark/70 dark:text-sand-dark border-l-2 border-terracotta pl-4 mb-6">
+              {t('home.hero2.kicker')}
+            </p>
           </Reveal>
-
           <Reveal delay={1}>
-            <h1 className="font-display display-text text-forest-dark dark:text-sand-light leading-[0.95]">
-              Silence <span className="italic font-light text-forest-dark/30 dark:text-sand-dark/60">&amp;</span> Sand.
+            <h1 className="display-text text-forest-dark dark:text-sand-light leading-[0.95]">
+              {t('home.hero2.title1')}
+              <br />
+              <span className="italic font-light text-forest-dark/40 dark:text-sand-dark/60">{t('home.hero2.title2')}</span>
             </h1>
           </Reveal>
-
           <Reveal delay={2}>
-            <p className="mt-7 max-w-md text-lg md:text-xl leading-relaxed text-forest-dark/70 dark:text-sand-dark">
+            <p className="mt-8 text-lg md:text-xl text-forest-dark/70 dark:text-sand-dark max-w-lg font-light leading-relaxed">
               {t('home.hero2.tagline')}
             </p>
           </Reveal>
-
           <Reveal delay={3}>
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
               <Link
@@ -66,74 +75,56 @@ function Hero({ t, destinations }) {
               </Link>
             </div>
           </Reveal>
-
-          <Reveal delay={3}>
-            <div className="mt-14 flex gap-14 border-t border-forest-dark/10 dark:border-white/10 pt-8">
-              {[
-                { value: '15+', label: t('home.hero2.yearsLabel') },
-                { value: '4.9', label: t('home.hero2.ratingLabel') },
-                { value: '120+', label: t('home.statTravelers') },
-              ].map((s) => (
-                <div key={s.label}>
-                  <div className="font-display text-3xl text-forest-dark dark:text-sand-light">{s.value}</div>
-                  <div className="mt-1 text-[0.7rem] uppercase tracking-wider text-forest-dark/50 dark:text-sand-dark">
-                    {s.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
         </div>
 
-        {/* Collage column */}
-        <div className="lg:col-span-7 relative lg:h-[76vh] min-h-[440px]">
-          {/* main frame */}
-          <Reveal variant="image" className="absolute inset-y-0 inset-x-0 lg:inset-x-auto lg:end-0 lg:w-4/5 rounded-[2.5rem] overflow-hidden shadow-soft-lg">
-            {main ? (
-              <Link to={`/reselieuChoisi/${main.id}/`} className="block h-full">
-                <img
-                  src={mediaUrl(main.image)}
-                  alt={main.name}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-expo hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-                <div className="absolute bottom-6 start-6 text-white">
-                  <div className="text-xs font-bold uppercase tracking-wider text-sand-light/90 mb-1">
-                    {main.city_name || t('home.hero2.featuredLocation')}
-                  </div>
-                  <h3 className="font-display text-3xl">{main.name}</h3>
-                </div>
-              </Link>
-            ) : (
-              <div className="w-full h-full bg-forest-dark/10 dark:bg-white/10 animate-pulse" />
-            )}
+        <div className="flex items-end justify-between border-t border-forest-dark/15 dark:border-white/10 pt-6">
+          <Reveal delay={2} className="flex items-center gap-4">
+            <i className="bi bi-sun text-xl text-terracotta"></i>
+            <p className="text-[0.7rem] uppercase tracking-widest text-forest-dark/60 dark:text-sand-dark leading-tight">
+              Rooted in tradition.
+              <br />
+              Committed to responsible travel.
+            </p>
           </Reveal>
-
-          {/* overlapping small frame */}
-          {second && (
-            <Reveal
-              delay={2}
-              className="hidden sm:block absolute -bottom-8 -start-2 lg:start-0 lg:bottom-10 w-40 lg:w-52 rounded-[1.5rem] overflow-hidden shadow-soft border-4 border-cream dark:border-forest-darker z-10 aspect-[3/4]"
-            >
-              <Link to={`/reselieuChoisi/${second.id}/`} className="block h-full">
-                <img
-                  src={mediaUrl(second.image)}
-                  alt={second.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </Link>
+          {featured && (
+            <Reveal delay={3} className="hidden sm:block text-right">
+              <div className="text-xs font-bold uppercase tracking-wider text-forest-dark/50 dark:text-sand-dark mb-1">
+                {featured.city_name || t('home.hero2.featuredLocation')}
+              </div>
+              <div className="font-display text-2xl text-forest-dark dark:text-sand-light">{featured.name}</div>
             </Reveal>
           )}
-
-          {/* floating quote chip */}
-          <Reveal delay={3} className="hidden md:flex absolute -top-6 -end-0 lg:-end-6 glass-panel rounded-full px-5 py-3 items-center gap-2 z-20">
-            <i className="bi bi-patch-check-fill text-copper"></i>
-            <span className="text-xs font-semibold text-forest-dark dark:text-sand-light">
-              {t('home.hero2.featuredLocation')}
-            </span>
-          </Reveal>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------- Editorial intro -------------------------- */
+
+function Intro({ t, destinations }) {
+  const d = destinations[0];
+  return (
+    <section className="py-24 lg:py-32 border-b border-forest-dark/10 dark:border-white/10 bg-cream dark:bg-forest-darker">
+      <div className="container-site grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <Reveal>
+          <p className="text-overline-custom mb-6">{t('home.editorial.title1')}</p>
+          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-forest-dark dark:text-sand-light leading-[1.05] mb-8">
+            {t('home.editorial.title1')}
+            <br />
+            <span className="italic font-light text-forest-dark/40 dark:text-sand-dark/60">{t('home.editorial.title2')}</span>
+          </h2>
+          <p className="text-forest-dark/60 dark:text-sand-dark leading-relaxed max-w-md">
+            {t('home.editorial.body')}
+          </p>
+        </Reveal>
+        <Reveal delay={1} variant="image" className="relative h-[400px] lg:h-[500px] w-full rounded-[2rem] overflow-hidden shadow-soft">
+          {d ? (
+            <img src={mediaUrl(d.image)} alt={d.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+          ) : (
+            <div className="absolute inset-0 bg-forest-dark/10 dark:bg-white/10 animate-pulse" />
+          )}
+        </Reveal>
       </div>
     </section>
   );
@@ -145,7 +136,8 @@ function Spotlight({ t, destinations }) {
   const d = destinations[0];
   if (!d) return null;
   return (
-    <section className="py-24 md:py-32 bg-white dark:bg-forest-darker">
+    <section className="py-24 md:py-32 bg-white dark:bg-forest-dark relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 -end-24 w-[34rem] h-[34rem] opacity-[0.05] pattern-zellige" />
       <div className="container-site grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <Reveal variant="image" className="lg:col-span-6 rounded-[2rem] overflow-hidden shadow-soft">
           <img src={mediaUrl(d.image)} alt={d.name} className="w-full h-[52vh] object-cover" loading="lazy" />
@@ -223,28 +215,32 @@ function Circuits({ t }) {
   const list = rest.slice(0, 3);
 
   return (
-    <section id="circuits" className="py-24 md:py-32 bg-sand-light/60 dark:bg-white/[0.02]">
+    <section id="circuits" className="py-24 md:py-32 bg-sand-light/60 dark:bg-white/[0.02] border-b border-forest-dark/10 dark:border-white/10">
       <div className="container-site">
-        <Reveal>
-          <div className="flex items-center gap-4 mb-5">
-            <span className="font-mono text-sm text-terracotta">02</span>
-            <span className="h-px w-10 bg-terracotta/40" />
-            <span className="text-xs font-bold uppercase tracking-[0.25em] text-terracotta">{t('home.circuits.kicker')}</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+          <div>
+            <Reveal>
+              <div className="flex items-center gap-4 mb-5">
+                <span className="font-mono text-sm text-terracotta">02</span>
+                <span className="h-px w-10 bg-terracotta/40" />
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-terracotta">{t('home.circuits.kicker')}</span>
+              </div>
+            </Reveal>
+            <Reveal delay={1}>
+              <h2 className="font-display text-4xl md:text-5xl text-forest-dark dark:text-sand-light">
+                {t('home.circuits.title')}
+              </h2>
+            </Reveal>
           </div>
-        </Reveal>
-        <Reveal delay={1}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
-            <h2 className="font-display text-4xl md:text-5xl text-forest-dark dark:text-sand-light">
-              {t('home.circuits.title')}
-            </h2>
+          <Reveal delay={1}>
             <Link
               to="/circuit/"
               className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-terracotta hover:gap-3 transition-all"
             >
               {t('home.circuits.viewAll')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
             </Link>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
 
         {/* Featured card */}
         <Reveal>
@@ -252,7 +248,10 @@ function Circuits({ t }) {
             to={`/circuitChoisi/${main.id}/`}
             className="group grid grid-cols-1 md:grid-cols-12 gap-0 overflow-hidden rounded-[2rem] bg-white dark:bg-forest-dark shadow-card ring-1 ring-forest-dark/5 dark:ring-white/5 hover:-translate-y-1.5 hover:shadow-soft transition duration-300"
           >
-            <div className="md:col-span-7 aspect-[16/10] md:aspect-auto overflow-hidden">
+            <div className="md:col-span-7 aspect-[16/10] md:aspect-auto overflow-hidden relative">
+              <span className="absolute top-4 left-4 z-10 bg-terracotta text-white text-[0.6rem] uppercase tracking-widest px-3 py-1.5 rounded-full">
+                {t('circuit.featured')}
+              </span>
               <img
                 src={mediaUrl(main.image || main.image_circuit)}
                 alt={main.pack_name}
@@ -322,19 +321,19 @@ function Pilgrimage({ t }) {
   ];
 
   return (
-    <section id="pilgrimage" className="py-24 md:py-32 bg-white dark:bg-forest-darker relative overflow-hidden">
-      <div className="container-site grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-        {/* Image collage */}
-        <div className="relative h-[54vh] lg:h-[70vh]">
-          <Reveal variant="image" className="absolute top-0 start-0 w-4/5 h-4/5 rounded-[2rem] overflow-hidden shadow-soft-lg z-10">
+    <section id="pilgrimage" className="py-24 md:py-32 bg-white dark:bg-forest-dark relative overflow-hidden border-b border-forest-dark/10 dark:border-white/10">
+      <div className="container-site grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
+        {/* Image collage — arch masked */}
+        <div className="lg:col-span-5 relative h-[54vh] lg:h-[70vh]">
+          <Reveal variant="image" className="absolute top-0 start-0 w-4/5 h-4/5 rounded-t-[9999px] overflow-hidden shadow-soft-lg z-10">
             <img
-              src="https://images.unsplash.com/photo-1565552643982-27ce6f4ed6f6?auto=format&fit=crop&w=900&q=80"
+              src="https://images.unsplash.com/photo-1565552643982-26178cb6890d?auto=format&fit=crop&w=900&q=80"
               alt={t('hadj.title')}
               className="w-full h-full object-cover"
               loading="lazy"
             />
           </Reveal>
-          <Reveal delay={2} className="absolute bottom-0 end-0 w-1/2 h-1/2 rounded-[1.5rem] overflow-hidden shadow-soft border-4 border-white dark:border-forest-darker z-20">
+          <Reveal delay={2} className="absolute bottom-0 end-0 w-1/2 h-1/2 rounded-[1.5rem] overflow-hidden shadow-soft border-4 border-white dark:border-forest-dark z-20">
             <img
               src="https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?auto=format&fit=crop&w=600&q=80"
               alt={t('hadj.titleArabic')}
@@ -345,7 +344,7 @@ function Pilgrimage({ t }) {
         </div>
 
         {/* Text */}
-        <div>
+        <div className="lg:col-span-7">
           <Reveal>
             <div className="flex items-center gap-4 mb-5">
               <span className="font-mono text-sm text-terracotta">03</span>
@@ -356,7 +355,7 @@ function Pilgrimage({ t }) {
           <Reveal delay={1}>
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-forest-dark dark:text-sand-light leading-tight mb-6">
               {t('home.pilgrimage.title1')}{' '}
-              <span className="italic font-light text-forest-dark/30 dark:text-sand-dark/60">{t('home.pilgrimage.title2')}</span>
+              <span className="italic font-light text-forest-dark/40 dark:text-sand-dark/60">{t('home.pilgrimage.title2')}</span>
             </h2>
           </Reveal>
           <Reveal delay={2}>
@@ -397,7 +396,7 @@ function Pilgrimage({ t }) {
 
 function Destinations({ t, destinations, loading }) {
   return (
-    <section id="destinations" className="py-24 bg-sand-light/60 dark:bg-white/[0.02]">
+    <section id="destinations" className="py-24 bg-sand-light/60 dark:bg-white/[0.02] border-b border-forest-dark/10 dark:border-white/10">
       <div className="container-site">
         <Reveal>
           <div className="flex items-center gap-4 mb-5">
@@ -478,12 +477,13 @@ function HomeV1() {
   return (
     <>
       <Hero t={t} destinations={destinations} />
+      <Intro t={t} destinations={destinations} />
       <Spotlight t={t} destinations={destinations} />
       <Circuits t={t} />
       <Pilgrimage t={t} />
       <Destinations t={t} destinations={destinations} loading={loading} />
 
-      <section id="weather" className="relative overflow-hidden bg-forest-darker py-20">
+      <section id="weather" className="relative overflow-hidden bg-forest-darker py-20 border-b border-forest-dark/10 dark:border-white/10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgb(var(--c-copper)/0.06),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-0 pattern-zellige opacity-50" />
         <div className="container-site relative">

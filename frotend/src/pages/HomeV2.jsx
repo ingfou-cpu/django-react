@@ -4,95 +4,119 @@ import api from '../lib/api.js';
 import { mediaUrl, formatDate, formatPrice } from '../lib/format.jsx';
 import { useLanguage } from '../lib/i18n.jsx';
 import Reveal from '../components/Reveal.jsx';
-import DestinationCard from '../components/DestinationCard.jsx';
 import WeatherWidget from '../components/WeatherWidget.jsx';
 import CtaBanner from '../components/CtaBanner.jsx';
 import Spinner from '../components/Spinner.jsx';
 
 /* ------------------------------------------------------------------ */
-/*  V2 — Sahara immersif                                               */
-/*  Dark cinematic on forest-darker. Copper/gold glow, zellige texture, */
-/*  full-viewport hero, pilgrimage as the immersive centerpiece.        */
+/*  V2 — Esprit Terres Touareg                                         */
+/*  Warm editorial redesign in the spirit of terres-touareg.com:       */
+/*  full-screen photo-slider hero, Agadez-cross motif, numbered        */
+/*  circuit cards, photo-led immersion sections and a journal preview. */
 /* ------------------------------------------------------------------ */
 
-/* --------------------------- Dark hero ----------------------------- */
+/* --------------------- Agadez-cross motif -------------------------- */
+
+function Cross({ className = 'h-10 w-10' }) {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <circle cx="24" cy="24" r="11" />
+      <path d="M24 4v9M24 35v9M4 24h9M35 24h9" />
+      <circle cx="24" cy="4" r="2.4" fill="currentColor" stroke="none" />
+      <circle cx="24" cy="44" r="2.4" fill="currentColor" stroke="none" />
+      <circle cx="4" cy="24" r="2.4" fill="currentColor" stroke="none" />
+      <circle cx="44" cy="24" r="2.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/* ------------------- Hero — full-screen photo slider ---------------- */
 
 function Hero({ t, destinations }) {
-  const d = destinations[0];
+  const [idx, setIdx] = useState(0);
+  const slides = destinations.filter((d) => d.image).slice(0, 5);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const id = setInterval(() => setIdx((i) => (i + 1) % slides.length), 6000);
+    return () => clearInterval(id);
+  }, [slides.length]);
 
   return (
-    <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden bg-forest-darker pt-24">
-      {/* Backdrop image */}
-      {d && (
+    <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-forest-darker pb-20 pt-24">
+      {/* Rotating backdrop */}
+      {slides.map((d, i) => (
         <img
+          key={d.id}
           src={mediaUrl(d.image)}
           alt={d.name}
-          className="absolute inset-0 w-full h-full object-cover opacity-35"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1600ms] ${
+            i === idx ? 'opacity-40' : 'opacity-0'
+          }`}
         />
-      )}
-      {/* Layered gradients + texture */}
-      <div className="absolute inset-0 bg-gradient-to-b from-forest-darker/70 via-forest-darker/55 to-forest-darker" />
-      <div className="absolute inset-0 bg-gradient-to-r from-forest-darker/80 via-transparent to-forest-darker/80" />
-      <div className="pointer-events-none absolute inset-0 pattern-zellige opacity-40" />
-      <div className="pointer-events-none absolute top-1/4 -start-20 w-[26rem] h-[26rem] bg-terracotta/10 rounded-full blur-[120px]" />
-      <div className="pointer-events-none absolute bottom-0 end-0 w-[30rem] h-[30rem] bg-copper/10 rounded-full blur-[140px]" />
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-b from-forest-darker/85 via-forest-darker/45 to-forest-darker" />
+      <div className="pointer-events-none absolute inset-0 pattern-star opacity-20" />
 
-      <div className="container-site relative z-10 text-center max-w-4xl mx-auto py-24">
+      {/* Cross watermark */}
+      <Cross className="pointer-events-none absolute -bottom-14 -end-14 h-80 w-80 text-sand-light/10" />
+
+      <div className="container-site relative z-10 mx-auto text-center">
         <Reveal>
-          <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-white/15 bg-white/5 backdrop-blur text-xs font-bold uppercase tracking-[0.25em] text-sand-light mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-terracotta animate-pulse" />
-            {t('home.hero2.kicker')}
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-5 py-2 text-xs font-bold uppercase tracking-[0.25em] text-sand-light backdrop-blur">
+            <Cross className="h-4 w-4 text-copper" />
+            {t('home.v2.heroKicker')}
           </div>
         </Reveal>
 
         <Reveal delay={1}>
-          <h1 className="font-display display-text text-sand-light leading-[0.92]">
-            Silence <br />
-            <span className="text-sand-dark italic font-light">&amp;</span> Sand.
+          <h1 className="mx-auto mt-8 max-w-4xl font-display text-4xl leading-[1.08] text-sand-light md:text-6xl lg:text-7xl">
+            {t('home.v2.heroTitle1')} <br className="hidden md:block" />
+            <span className="italic text-copper-light">{t('home.v2.heroTitle2')}</span>
           </h1>
         </Reveal>
 
         <Reveal delay={2}>
-          <p className="mt-8 text-lg md:text-2xl text-sand-dark font-light max-w-2xl mx-auto leading-relaxed">
-            {t('home.hero2.tagline')}
+          <p className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-sand-dark md:text-xl">
+            {t('home.v2.heroSub')}
           </p>
         </Reveal>
 
         <Reveal delay={3}>
-          <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              to="/circuit/"
-              className="btn bg-terracotta text-white px-9 py-4 rounded-full text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-forest-darker transition-colors duration-300 shadow-glow"
-            >
-              {t('home.hero2.cta')}
-            </Link>
-            <Link
-              to="/hadj-omra/"
-              className="btn px-9 py-4 rounded-full text-sm font-bold uppercase tracking-wider border border-white/20 text-sand-light hover:border-terracotta hover:text-terracotta transition-colors"
-            >
-              <i className="bi bi-moon-stars-fill me-2"></i>{t('home.pilgrimage.cta')}
-            </Link>
-          </div>
-        </Reveal>
-
-        <Reveal delay={3}>
-          <div className="mt-16 flex items-center justify-center gap-10">
-            {[
-              { value: '15+', label: t('home.hero2.yearsLabel') },
-              { value: '4.9', label: t('home.hero2.ratingLabel') },
-              { value: '120+', label: t('home.statTravelers') },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="font-display text-3xl md:text-4xl text-copper">{s.value}</div>
-                <div className="mt-1 text-[0.68rem] uppercase tracking-widest text-sand-dark">{s.label}</div>
-              </div>
-            ))}
-          </div>
+          <Link
+            to="/circuit/"
+            className="btn mt-10 bg-copper px-9 py-4 text-sm font-bold uppercase tracking-wider text-white shadow-glow transition-colors duration-300 hover:bg-white hover:text-forest-darker"
+          >
+            {t('home.v2.heroCta')}
+          </Link>
         </Reveal>
       </div>
 
+      {/* Slide dots */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-24 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Slide ${i + 1}`}
+              onClick={() => setIdx(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === idx ? 'w-8 bg-copper' : 'w-3 bg-white/40 hover:bg-white/70'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Scroll cue */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-sand-dark flex flex-col items-center gap-2 text-xs uppercase tracking-widest">
+      <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-xs uppercase tracking-widest text-sand-dark">
         <span>{t('cta.details')}</span>
         <i className="bi bi-chevron-down animate-bounce"></i>
       </div>
@@ -100,140 +124,337 @@ function Hero({ t, destinations }) {
   );
 }
 
-/* ----------------------- Editorial quote strip --------------------- */
+/* --------------------- Propos — intro editorial --------------------- */
 
-function Quote({ t }) {
+function Propos({ t, packs }) {
+  const today = new Date(new Date().setHours(0, 0, 0, 0));
+  const upcoming = packs
+    .filter((p) => p.date && new Date(p.date) >= today)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 6);
+
   return (
-    <section className="bg-forest-darker border-y border-white/5 py-24 md:py-32">
-      <div className="max-w-4xl mx-auto px-4 text-center">
+    <section className="bg-cream py-24 text-center dark:bg-forest-darker md:py-32">
+      <div className="container-site">
         <Reveal>
-          <div className="mx-auto mb-8 w-12 h-12 rounded-full border border-copper/30 flex items-center justify-center">
-            <i className="bi bi-star-fill text-copper text-lg"></i>
-          </div>
+          <Cross className="mx-auto h-12 w-12 text-copper" />
         </Reveal>
+
         <Reveal delay={1}>
-          <h2 className="font-display text-3xl md:text-5xl lg:text-6xl text-sand-light leading-tight mb-8">
-            {t('home.editorial.title1')} <br />
-            <span className="text-sand-dark italic font-light">{t('home.editorial.title2')}</span>
+          <h2 className="mx-auto mt-6 max-w-3xl font-display text-4xl leading-tight text-forest-dark dark:text-sand-light md:text-5xl">
+            {t('home.v2.proposTitle1')} <br className="hidden md:block" />
+            <span className="italic text-copper">{t('home.v2.proposTitle2')}</span>
           </h2>
         </Reveal>
+
         <Reveal delay={2}>
-          <p className="text-sand-dark text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            {t('home.editorial.body')}
+          <p className="mt-5 font-display text-xl italic text-forest-dark/60 dark:text-sand-dark">
+            {t('home.v2.proposSubtitle')}
           </p>
+        </Reveal>
+
+        <Reveal delay={2}>
+          <p className="mx-auto mt-6 max-w-2xl font-light leading-relaxed text-forest-dark/70 dark:text-sand-dark">
+            {t('home.v2.proposBody')}
+          </p>
+        </Reveal>
+
+        {upcoming.length > 0 && (
+          <Reveal delay={3}>
+            <div className="mx-auto mt-12 max-w-3xl rounded-3xl border border-forest-dark/10 bg-white p-6 shadow-card dark:border-white/10 dark:bg-forest-dark md:p-8">
+              <div className="mb-5 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-copper">
+                <i className="bi bi-calendar-event"></i>
+                {t('home.v2.departuresTitle')}
+              </div>
+              <ul className="space-y-1">
+                {upcoming.map((p) => (
+                  <li key={p.id}>
+                    <Link
+                      to={`/circuitChoisi/${p.id}/`}
+                      className="group flex flex-col gap-1 rounded-xl px-3 py-2 text-start transition hover:bg-copper/10 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <span className="text-sm font-medium text-forest-dark transition-colors group-hover:text-copper dark:text-sand-light">
+                        {p.pack_name}
+                      </span>
+                      <span className="text-xs text-forest-dark/60 dark:text-sand-dark">
+                        <i className="bi bi-calendar2-week me-1"></i>
+                        {formatDate(p.date)}
+                        {p.duration ? ` · ${p.duration} ${t('home.v2.days')}` : ''}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        )}
+
+        <Reveal delay={3}>
+          <Link
+            to="/circuit/"
+            className="btn-outline mt-10 px-8 py-3.5 text-sm font-bold uppercase tracking-wider"
+          >
+            {t('home.v2.heroCta')}
+          </Link>
         </Reveal>
       </div>
     </section>
   );
 }
 
-/* ------------------------ Circuits — dark cards -------------------- */
+/* --------------------- Circuits — numbered cards -------------------- */
 
-function Circuits({ t }) {
-  const [packs, setPacks] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.packs().then(setPacks).finally(() => setLoading(false));
-  }, []);
-
+function Circuits({ t, packs, loading }) {
   if (loading) {
     return (
-      <section className="py-24 bg-forest-darker">
-        <div className="container-site flex justify-center py-16"><Spinner /></div>
+      <section className="bg-cream py-24 dark:bg-forest-darker">
+        <div className="container-site flex justify-center py-16">
+          <Spinner />
+        </div>
       </section>
     );
   }
   if (!packs.length) return null;
 
-  const [main, ...rest] = packs;
-  const grid = rest.slice(0, 2);
+  const show = packs.slice(0, 4);
 
   return (
-    <section id="circuits" className="py-24 md:py-32 bg-forest-darker relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgb(var(--c-copper)/0.07),transparent_45%)]" />
-      <div className="container-site relative">
+    <section id="circuits" className="bg-cream pb-24 dark:bg-forest-darker md:pb-32">
+      <div className="container-site">
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
-            <div>
-              <span className="text-terracotta text-xs font-bold uppercase tracking-[0.25em] block mb-3">
-                {t('home.circuits.kicker')}
-              </span>
-              <h2 className="font-display text-4xl md:text-5xl text-sand-light">{t('home.circuits.title')}</h2>
-            </div>
-            <Link
-              to="/circuit/"
-              className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-terracotta hover:gap-3 transition-all"
-            >
-              {t('home.circuits.viewAll')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
-            </Link>
+          <div className="flex flex-col items-center text-center">
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-copper">
+              {t('home.circuits.kicker')}
+            </span>
+            <h2 className="mt-3 font-display text-4xl text-forest-dark dark:text-sand-light md:text-5xl">
+              {t('home.circuits.title')}
+            </h2>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Featured card — spans both columns visually via large text */}
-          <Reveal className="md:col-span-2">
-            <Link
-              to={`/circuitChoisi/${main.id}/`}
-              className="group relative block overflow-hidden rounded-[2rem] bg-forest-dark ring-1 ring-white/10 hover:-translate-y-1.5 hover:shadow-soft transition duration-300"
-            >
-              <div className="aspect-[21/9] overflow-hidden">
-                <img
-                  src={mediaUrl(main.image || main.image_circuit)}
-                  alt={main.pack_name}
-                  className="w-full h-full object-cover transition duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-forest-darker via-forest-darker/40 to-transparent" />
-              </div>
-              <div className="absolute bottom-0 inset-x-0 p-6 md:p-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                  <div className="text-sand-dark text-sm font-medium mb-2">
-                    {main.date ? formatDate(main.date) : '—'}
-                  </div>
-                  <h3 className="font-display text-3xl md:text-4xl text-sand-light group-hover:text-terracotta transition-colors">
-                    {main.pack_name}
-                  </h3>
-                </div>
-                <div className="flex items-center gap-6">
-                  {main.price && (
-                    <span className="text-copper font-bold text-xl">{formatPrice(main.price)}</span>
-                  )}
-                  <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-terracotta">
-                    {t('cta.details')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </Reveal>
-
-          {grid.map((pack, idx) => (
-            <Reveal key={pack.id} delay={idx + 1}>
+        <div className="mt-14 space-y-6">
+          {show.map((pack, i) => (
+            <Reveal key={pack.id} delay={(i % 2) + 1}>
               <Link
                 to={`/circuitChoisi/${pack.id}/`}
-                className="group block overflow-hidden rounded-2xl bg-forest-dark ring-1 ring-white/10 hover:-translate-y-1 transition duration-300 h-full"
+                className="group flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-forest-dark/5 transition duration-300 hover:-translate-y-1 hover:shadow-soft md:flex-row dark:bg-forest-dark dark:ring-white/5"
               >
-                {pack.image && (
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={mediaUrl(pack.image)}
-                      alt={pack.pack_name}
-                      className="w-full h-full object-cover transition duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    />
+                <div className="relative w-full shrink-0 overflow-hidden md:w-[42%]">
+                  <img
+                    src={mediaUrl(pack.image || pack.image_circuit)}
+                    alt={pack.pack_name}
+                    className="h-56 w-full object-cover transition duration-700 group-hover:scale-105 md:h-full"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col justify-center p-6 md:p-9">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-copper">
+                      {t('home.v2.circuitNum')}
+                      {i + 1}
+                      {pack.city_name ? ` — ${pack.city_name}` : ''}
+                    </span>
+                    {pack.price && (
+                      <span className="text-lg font-semibold text-forest-dark dark:text-sand-light">
+                        {formatPrice(pack.price)}
+                      </span>
+                    )}
                   </div>
-                )}
-                <div className="p-6">
-                  <h3 className="font-display text-2xl text-sand-light group-hover:text-terracotta transition-colors mb-2">
+                  <p className="mt-2 text-xs text-forest-dark/50 dark:text-sand-dark">
+                    {pack.date ? formatDate(pack.date) : '—'}
+                    {pack.duration ? ` · ${pack.duration} ${t('home.v2.days')}` : ''}
+                  </p>
+                  <h3 className="mt-3 font-display text-2xl leading-snug text-forest-dark transition-colors group-hover:text-copper dark:text-sand-light">
                     {pack.pack_name}
                   </h3>
-                  <p className="text-sm text-sand-dark line-clamp-2 mb-4">{pack.description}</p>
-                  <div className="flex items-center justify-between">
-                    {pack.price && <span className="text-copper font-semibold">{formatPrice(pack.price)}</span>}
-                    <span className="text-xs text-sand-dark">{pack.date ? formatDate(pack.date) : ''}</span>
-                  </div>
+                  {pack.description && (
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-forest-dark/60 dark:text-sand-dark">
+                      {pack.description}
+                    </p>
+                  )}
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-copper">
+                    {t('home.v2.details')}
+                    <i className="bi bi-arrow-right rtl:rotate-180 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"></i>
+                  </span>
                 </div>
               </Link>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal>
+          <div className="mt-12 text-center">
+            <Link
+              to="/circuit/"
+              className="btn bg-forest-dark px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-sand-light transition-colors duration-300 hover:bg-copper hover:text-white dark:bg-forest-darker"
+            >
+              {t('home.v2.viewAllCircuits')}
+            </Link>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------- Immersion — editorial split -------------------- */
+
+function Immersion({ t, destinations }) {
+  const imgs = destinations.filter((d) => d.image);
+  const main = imgs[0];
+  const sub = imgs[1];
+
+  return (
+    <section className="bg-sand-light/60 py-24 dark:bg-white/[0.02] md:py-32">
+      <div className="container-site grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+        {/* Collage */}
+        <div className="relative mx-auto w-full max-w-md lg:max-w-none">
+          {main ? (
+            <Reveal variant="image" className="overflow-hidden rounded-[2rem] shadow-soft-lg">
+              <img
+                src={mediaUrl(main.image)}
+                alt={main.name}
+                className="aspect-[4/5] w-full object-cover"
+                loading="lazy"
+              />
+            </Reveal>
+          ) : (
+            <div className="aspect-[4/5] w-full animate-pulse rounded-[2rem] bg-forest-dark/10 dark:bg-white/5" />
+          )}
+          {sub && (
+            <Reveal
+              delay={2}
+              className="absolute -bottom-8 -end-4 w-2/5 overflow-hidden rounded-2xl border-4 border-cream shadow-2xl dark:border-forest-darker"
+            >
+              <img
+                src={mediaUrl(sub.image)}
+                alt={sub.name}
+                className="aspect-square w-full object-cover"
+                loading="lazy"
+              />
+            </Reveal>
+          )}
+          <Cross className="pointer-events-none absolute -start-6 -top-6 h-16 w-16 text-copper/30" />
+        </div>
+
+        {/* Text */}
+        <div>
+          <Reveal>
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-copper">
+              <Cross className="h-4 w-4" />
+              {t('home.v2.immersionKicker')}
+            </div>
+          </Reveal>
+          <Reveal delay={1}>
+            <h2 className="mt-5 font-display text-3xl leading-tight text-forest-dark dark:text-sand-light md:text-5xl">
+              {t('home.v2.immersionTitle')}
+            </h2>
+          </Reveal>
+          <Reveal delay={2}>
+            <p className="mt-6 max-w-lg font-light leading-relaxed text-forest-dark/70 dark:text-sand-dark">
+              {t('home.v2.immersionBody')}
+            </p>
+          </Reveal>
+          <Reveal delay={3}>
+            <Link
+              to="/about/"
+              className="group mt-8 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-copper transition-all hover:gap-3"
+            >
+              {t('home.v2.immersionLink')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
+            </Link>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* --------------------- Gallery — full-bleed strip ------------------- */
+
+function Gallery({ t, destinations }) {
+  const imgs = destinations.filter((d) => d.image).slice(0, 8);
+  if (!imgs.length) return null;
+
+  return (
+    <section aria-label={t('home.grid.title')} className="bg-cream dark:bg-forest-darker">
+      <div className="grid grid-cols-2 gap-1 md:grid-cols-4">
+        {imgs.map((d) => (
+          <Link
+            key={d.id}
+            to={`/reselieuChoisi/${d.id}/`}
+            className="group relative h-52 overflow-hidden md:h-64"
+          >
+            <img
+              src={mediaUrl(d.image)}
+              alt={d.name}
+              className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-forest-darker/0 transition duration-300 group-hover:bg-forest-darker/40" />
+            <span className="absolute bottom-3 start-3 translate-y-2 text-xs font-semibold uppercase tracking-wider text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              {d.city_name || d.name}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------- Engagements — commitments band ----------------- */
+
+function Engagements({ t }) {
+  const items = [
+    { icon: 'bi-people-fill', title: t('home.v2.eng1Title'), desc: t('home.v2.eng1Desc') },
+    { icon: 'bi-emoji-smile', title: t('home.v2.eng2Title'), desc: t('home.v2.eng2Desc') },
+    { icon: 'bi-signpost-2-fill', title: t('home.v2.eng3Title'), desc: t('home.v2.eng3Desc') },
+    { icon: 'bi-leaf', title: t('home.v2.eng4Title'), desc: t('home.v2.eng4Desc') },
+  ];
+
+  return (
+    <section className="relative overflow-hidden bg-forest-darker py-24 text-sand-light md:py-32">
+      <div className="pointer-events-none absolute -end-32 -top-32 h-[34rem] w-[34rem] rounded-full bg-copper/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -start-32 -bottom-32 h-[28rem] w-[28rem] rounded-full bg-terracotta/10 blur-[120px]" />
+      <div className="pointer-events-none absolute inset-0 pattern-star opacity-25" />
+
+      <div className="container-site relative grid items-center gap-14 lg:grid-cols-2">
+        <div>
+          <Reveal>
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.25em] text-copper">
+              <Cross className="h-4 w-4" />
+              {t('home.v2.engagementsKicker')}
+            </div>
+          </Reveal>
+          <Reveal delay={1}>
+            <h2 className="mt-5 font-display text-3xl leading-tight text-sand-light md:text-5xl">
+              {t('home.v2.engagementsTitle')}
+            </h2>
+          </Reveal>
+          <Reveal delay={2}>
+            <p className="mt-6 max-w-lg font-light leading-relaxed text-sand-dark">
+              {t('home.v2.engagementsBody')}
+            </p>
+          </Reveal>
+          <Reveal delay={3}>
+            <Link
+              to="/about/"
+              className="btn mt-10 bg-copper px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-glow transition-colors duration-300 hover:bg-white hover:text-forest-darker"
+            >
+              {t('home.v2.engagementsCta')}
+            </Link>
+          </Reveal>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          {items.map((f, i) => (
+            <Reveal key={f.title} delay={(i % 2) + 1}>
+              <div className="h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur transition duration-300 hover:border-copper/40 hover:bg-white/[0.07]">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-copper/15 text-lg text-copper">
+                  <i className={`bi ${f.icon}`}></i>
+                </div>
+                <h3 className="mt-4 font-medium text-white">{f.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-sand-dark">{f.desc}</p>
+              </div>
             </Reveal>
           ))}
         </div>
@@ -242,162 +463,172 @@ function Circuits({ t }) {
   );
 }
 
-/* ------------------- Pilgrimage — immersive centerpiece ------------ */
+/* ----------------- Pilgrimage — full-bleed invitation band ----------- */
 
-function Pilgrimage({ t }) {
-  const features = [
-    { title: t('home.pilgrimage.feat1Title'), desc: t('home.pilgrimage.feat1Desc') },
-    { title: t('home.pilgrimage.feat2Title'), desc: t('home.pilgrimage.feat2Desc') },
-  ];
-
+function PilgrimageBand({ t }) {
   return (
-    <section id="pilgrimage" className="py-28 md:py-40 bg-forest-dark text-sand-light relative overflow-hidden">
-      <div className="pointer-events-none absolute top-0 right-0 w-[45vw] h-[45vw] bg-copper/8 rounded-full blur-[130px]" />
-      <div className="pointer-events-none absolute bottom-0 left-0 w-[30vw] h-[30vw] bg-terracotta/8 rounded-full blur-[100px]" />
-      <div className="pointer-events-none absolute inset-0 pattern-star opacity-25" />
+    <section className="relative flex min-h-[62vh] items-center justify-center overflow-hidden">
+      <img
+        src="https://images.unsplash.com/photo-1565552643982-27ce6f4ed6f6?auto=format&fit=crop&w=1600&q=80"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 bg-forest-darker/70" />
+      <div className="pointer-events-none absolute inset-0 pattern-zellige opacity-20" />
 
-      <div className="container-site relative grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Image collage */}
-        <div className="relative h-[56vh] lg:h-[76vh]">
-          <Reveal variant="image" className="absolute top-0 end-0 w-3/4 h-3/4 rounded-[2rem] overflow-hidden shadow-2xl z-10">
-            <img
-              src="https://images.unsplash.com/photo-1565552643982-27ce6f4ed6f6?auto=format&fit=crop&w=900&q=80"
-              alt={t('hadj.title')}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </Reveal>
-          <Reveal delay={2} className="absolute bottom-0 start-0 w-2/3 h-1/2 rounded-[1.5rem] overflow-hidden shadow-2xl border-4 border-forest-dark z-20">
-            <img
-              src="https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?auto=format&fit=crop&w=700&q=80"
-              alt={t('hadj.titleArabic')}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </Reveal>
-          {/* Arabic watermark */}
-          <Reveal delay={3} className="absolute -bottom-6 -end-2 font-arabic text-5xl md:text-6xl text-sand-light/10 select-none">
-            الحج والعمرة
-          </Reveal>
-        </div>
-
-        {/* Content */}
-        <div className="order-2 lg:order-1">
-          <Reveal>
-            <div className="inline-flex items-center gap-2 px-3 py-1 border border-copper/30 rounded-full text-xs font-medium tracking-widest uppercase mb-8">
-              <i className="bi bi-moon-stars-fill text-copper"></i>
-              {t('home.pilgrimage.kicker')}
-            </div>
-          </Reveal>
-          <Reveal delay={1}>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-tight mb-8">
-              {t('home.pilgrimage.title1')} <br />
-              <span className="text-copper italic font-light">{t('home.pilgrimage.title2')}</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={2}>
-            <p className="text-sand-dark text-lg mb-10 max-w-md font-light leading-relaxed">
-              {t('home.pilgrimage.body')}
-            </p>
-          </Reveal>
-
-          <ul className="space-y-6 mb-12">
-            {features.map((f, idx) => (
-              <Reveal key={f.title} delay={idx + 1}>
-                <li className="flex items-start gap-4">
-                  <div className="w-6 h-6 rounded-full bg-copper/20 border border-copper/40 flex items-center justify-center shrink-0 mt-0.5">
-                    <i className="bi bi-check text-xs text-copper"></i>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-white mb-1">{f.title}</h4>
-                    <p className="text-sm text-sand-dark">{f.desc}</p>
-                  </div>
-                </li>
-              </Reveal>
-            ))}
-          </ul>
-
-          <Reveal delay={3}>
-            <Link
-              to="/hadj-omra/"
-              className="btn bg-white text-forest-darker px-9 py-4 rounded-full text-sm font-bold uppercase tracking-wider hover:bg-terracotta hover:text-white transition-colors duration-300"
-            >
-              {t('home.pilgrimage.cta')}
-            </Link>
-          </Reveal>
-        </div>
+      <div className="container-site relative z-10 py-24 text-center">
+        <Reveal>
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2 text-xs font-bold uppercase tracking-[0.25em] text-sand-light backdrop-blur">
+            <i className="bi bi-moon-stars-fill text-copper"></i>
+            {t('home.v2.bandKicker')}
+          </span>
+        </Reveal>
+        <Reveal delay={1}>
+          <h2 className="mx-auto mt-6 max-w-3xl font-display text-4xl leading-tight text-sand-light md:text-6xl">
+            {t('home.v2.bandTitle')}
+          </h2>
+        </Reveal>
+        <Reveal delay={2}>
+          <p className="mx-auto mt-5 max-w-xl font-light text-sand-dark md:text-lg">
+            {t('home.v2.bandBody')}
+          </p>
+        </Reveal>
+        <Reveal delay={3}>
+          <Link
+            to="/hadj-omra/"
+            className="btn mt-9 bg-copper px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-white shadow-glow transition-colors duration-300 hover:bg-white hover:text-forest-darker"
+          >
+            {t('home.v2.bandCta')}
+          </Link>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/* --------------------- Destinations — dark section ----------------- */
+/* --------------------- Journal — blog preview ------------------------ */
 
-function Destinations({ t, destinations, loading }) {
+function Journal({ t }) {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .blogPosts()
+      .then((all) => setPosts(all.filter((p) => p.published).slice(0, 3)))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
-    <section id="destinations" className="py-24 md:py-32 bg-forest-darker">
+    <section id="journal" className="bg-cream py-24 dark:bg-forest-darker">
       <div className="container-site">
         <Reveal>
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <span className="text-terracotta text-xs font-bold uppercase tracking-[0.25em] block mb-3">
-                {t('dest.kicker')}
+              <span className="text-xs font-bold uppercase tracking-[0.25em] text-copper">
+                {t('home.v2.journalKicker')}
               </span>
-              <h2 className="font-display text-4xl md:text-5xl text-sand-light">{t('home.grid.title')}</h2>
+              <h2 className="mt-3 font-display text-4xl text-forest-dark dark:text-sand-light md:text-5xl">
+                {t('home.v2.journalTitle')}
+              </h2>
             </div>
             <Link
-              to="/destinations/"
-              className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-terracotta hover:gap-3 transition-all"
+              to="/blog/"
+              className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-copper transition-all hover:gap-3"
             >
-              {t('cta.seeMore')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
+              {t('home.v2.journalAll')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
             </Link>
           </div>
         </Reveal>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {loading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="card h-80 animate-pulse bg-white/5" />
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="card h-80 animate-pulse bg-white/60 dark:bg-white/5" />
               ))
-            : destinations.map((d) => <DestinationCard key={d.id} destination={d} />)}
+            : posts.map((post, i) => (
+                <Reveal key={post.id} delay={i + 1}>
+                  <Link
+                    to={`/blog/${post.slug}/`}
+                    className="group block h-full overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-forest-dark/5 transition duration-300 hover:-translate-y-1.5 hover:shadow-soft dark:bg-forest-dark dark:ring-white/5"
+                  >
+                    {post.image && (
+                      <div className="aspect-[16/10] overflow-hidden">
+                        <img
+                          src={mediaUrl(post.image)}
+                          alt={post.title}
+                          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <p className="text-xs uppercase tracking-wide text-forest-dark/50 dark:text-sand-dark">
+                        {formatDate(post.created_at)}
+                      </p>
+                      <h3 className="mt-2 font-display text-xl leading-snug text-forest-dark transition-colors group-hover:text-copper dark:text-sand-light">
+                        {post.title}
+                      </h3>
+                      <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-copper">
+                        {t('home.v2.readArticle')} <i className="bi bi-arrow-right rtl:rotate-180"></i>
+                      </span>
+                    </div>
+                  </Link>
+                </Reveal>
+              ))}
         </div>
       </div>
     </section>
   );
 }
 
-/* ----------------------------- Contact ----------------------------- */
+/* ----------------------------- Contact ------------------------------- */
 
 function Contact({ t }) {
   const items = [
     { icon: 'bi-geo-alt', title: t('home.contactAddress'), body: 'El Bayadh, Algérie' },
-    { icon: 'bi-envelope', title: t('home.contactEmail'), body: 'contact@elbayadhtravels.dz', href: 'mailto:contact@elbayadhtravels.dz' },
+    {
+      icon: 'bi-envelope',
+      title: t('home.contactEmail'),
+      body: 'contact@elbayadhtravels.dz',
+      href: 'mailto:contact@elbayadhtravels.dz',
+    },
     { icon: 'bi-phone', title: t('home.contactPhone'), body: '+213 (0) 00 00 00 00' },
   ];
 
   return (
-    <section id="contact" className="py-24 bg-forest-darker">
+    <section id="contact" className="bg-cream py-24 dark:bg-forest-darker">
       <div className="container-site">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
           <Reveal>
-            <span className="text-terracotta text-xs font-bold uppercase tracking-widest block mb-3">{t('contact.kicker')}</span>
-            <h2 className="font-display text-4xl text-sand-light">{t('home.contact.title')}</h2>
-            <p className="mt-3 text-sand-dark">{t('home.contact.subtitle')}</p>
+            <span className="text-xs font-bold uppercase tracking-[0.25em] text-copper">
+              {t('contact.kicker')}
+            </span>
+            <h2 className="mt-3 font-display text-4xl text-forest-dark dark:text-sand-light">
+              {t('home.contact.title')}
+            </h2>
+            <p className="mt-3 text-forest-dark/60 dark:text-sand-dark">{t('home.contact.subtitle')}</p>
           </Reveal>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {items.map((c) => (
-            <div key={c.title} className="rounded-3xl bg-forest-dark ring-1 ring-white/10 p-8 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-copper/15 text-2xl text-copper">
-                <i className={`bi ${c.icon}`}></i>
+            <Reveal key={c.title}>
+              <div className="rounded-3xl bg-white p-8 text-center shadow-card ring-1 ring-forest-dark/5 dark:bg-forest-dark dark:ring-white/5">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-copper/15 text-2xl text-copper">
+                  <i className={`bi ${c.icon}`}></i>
+                </div>
+                <h4 className="mt-4 text-lg font-semibold text-forest-dark dark:text-sand-light">{c.title}</h4>
+                <div className="mx-auto my-4 h-px w-12 bg-copper/40" />
+                {c.href ? (
+                  <a href={c.href} className="text-sm text-forest-dark/70 dark:text-sand-dark">
+                    {c.body}
+                  </a>
+                ) : (
+                  <p className="text-sm text-forest-dark/70 dark:text-sand-dark">{c.body}</p>
+                )}
               </div>
-              <h4 className="mt-4 text-lg font-semibold text-sand-light">{c.title}</h4>
-              <div className="mx-auto my-4 h-px w-12 bg-copper/40" />
-              {c.href ? (
-                <a href={c.href} className="text-sm text-sand-dark">{c.body}</a>
-              ) : (
-                <p className="text-sm text-sand-dark">{c.body}</p>
-              )}
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -405,35 +636,69 @@ function Contact({ t }) {
   );
 }
 
-/* --------------------------- Composition --------------------------- */
+/* ------------------------- Terres Touareg info bar ------------------ */
+
+function InfoBar({ t }) {
+  const items = [
+    { icon: 'bi-geo-alt', value: 'El Bayadh, Algérie' },
+    { icon: 'bi-envelope', value: 'contact@elbayadhtravels.dz' },
+    { icon: 'bi-phone', value: '+213 (0) 00 00 00 00' },
+  ];
+  return (
+    <div className="bg-forest-dark py-3.5 text-sand-light">
+      <div className="container-site flex flex-col items-center justify-center gap-2.5 text-xs sm:flex-row sm:gap-10">
+        {items.map((f) => (
+          <span key={f.icon} className="inline-flex items-center gap-2">
+            <i className={`bi ${f.icon} text-copper`}></i>
+            {f.value}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------- Composition ----------------------------- */
 
 function HomeV2() {
   const { t } = useLanguage();
   const [destinations, setDestinations] = useState([]);
+  const [packs, setPacks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api
-      .destinations()
-      .then(setDestinations)
+    Promise.all([api.destinations(), api.packs()])
+      .then(([d, p]) => {
+        setDestinations(d);
+        setPacks(p);
+      })
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <>
+    <div className="home-v2-terres text-forest-dark dark:text-sand-light">
       <Hero t={t} destinations={destinations} />
-      <Quote t={t} />
-      <Circuits t={t} />
-      <Pilgrimage t={t} />
-      <Destinations t={t} destinations={destinations} loading={loading} />
+      <InfoBar t={t} />
+      <Propos t={t} packs={packs} />
+      <Circuits t={t} packs={packs} loading={loading} />
+      <Immersion t={t} destinations={destinations} />
+      <Gallery t={t} destinations={destinations} />
+      <Engagements t={t} />
+      <PilgrimageBand t={t} />
+      <Journal t={t} />
 
-      <section id="weather" className="relative overflow-hidden bg-forest-darker py-20 border-t border-white/5">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgb(var(--c-copper)/0.06),transparent_60%)]" />
-        <div className="pointer-events-none absolute inset-0 pattern-zellige opacity-50" />
-        <div className="container-site relative">
+      <section
+        id="weather"
+        className="border-t border-forest-dark/5 bg-sand-light/60 py-20 dark:border-white/5 dark:bg-white/[0.02]"
+      >
+        <div className="container-site">
           <div className="text-center">
-            <h2 className="font-display text-4xl md:text-5xl text-sand-light">{t('home.weather.title')}</h2>
-            <p className="mt-3 text-sand-dark max-w-xl mx-auto">{t('home.weather.subtitle')}</p>
+            <h2 className="font-display text-4xl text-forest-dark dark:text-sand-light md:text-5xl">
+              {t('home.weather.title')}
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-forest-dark/60 dark:text-sand-dark">
+              {t('home.weather.subtitle')}
+            </p>
           </div>
           <div className="mt-10">
             <WeatherWidget initialCity="El Bayadh" />
@@ -443,7 +708,7 @@ function HomeV2() {
 
       <CtaBanner />
       <Contact t={t} />
-    </>
+    </div>
   );
 }
 

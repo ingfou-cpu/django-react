@@ -24,6 +24,48 @@ function Hero({ t, destinations }) {
 
   const d = destinations[imgIdx];
 
+  // Fallback when no destinations available
+  if (!destinations.length) {
+    return (
+      <section className="relative min-h-[100dvh] pt-20 flex flex-col lg:flex-row items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 gap-8 lg:gap-16">
+        <div className="w-full lg:w-5/12 flex flex-col justify-center pt-12 lg:pt-0 z-10 order-2 lg:order-1">
+          <Reveal>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-px bg-terracotta" />
+              <span className="text-xs font-medium uppercase tracking-widest text-terracotta">{t('home.hero2.kicker')}</span>
+            </div>
+          </Reveal>
+          <Reveal delay={1}>
+            <h1 className="font-display display-text text-forest-dark dark:text-sand-light mb-6">
+              {t('home.hero2.title1')} <br />
+              <span className="text-forest-dark/30 dark:text-sand-dark/60 italic font-light">{t('home.hero2.title2')}</span>
+            </h1>
+          </Reveal>
+          <Reveal delay={2}>
+            <p className="text-forest-dark/70 dark:text-sand-dark text-lg md:text-xl max-w-md leading-relaxed mb-10">
+              {t('home.hero2.tagline')}
+            </p>
+          </Reveal>
+          <Reveal delay={3}>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/circuit/" className="btn-primary px-8 py-4 rounded-full text-sm font-bold uppercase tracking-wider">
+                {t('home.hero2.cta')}
+              </Link>
+              <Link to="/destinations/" className="btn-ghost !text-forest-dark dark:!text-sand-light items-center gap-2">
+                <i className="bi bi-geo-alt"></i> {t('nav.destinations')}
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+        <div className="w-full lg:w-7/12 h-[55vh] lg:h-[82vh] relative order-1 lg:order-2 mt-8 lg:mt-0">
+          <div className="absolute inset-0 bg-sand-dark/30 dark:bg-white/5 rounded-[2rem] overflow-hidden">
+            <div className="w-full h-full bg-forest-dark/5 dark:bg-white/5 animate-pulse rounded-[2rem]" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative min-h-[100dvh] pt-20 flex flex-col lg:flex-row items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 gap-8 lg:gap-16">
       {/* Left content */}
@@ -37,8 +79,8 @@ function Hero({ t, destinations }) {
 
         <Reveal delay={1}>
           <h1 className="font-display display-text text-forest-dark dark:text-sand-light mb-6">
-            Silence <br />
-            <span className="text-forest-dark/30 dark:text-sand-dark/60 italic font-light">&amp;</span> Sand.
+            {t('home.hero2.title1')} <br />
+            <span className="text-forest-dark/30 dark:text-sand-dark/60 italic font-light">{t('home.hero2.title2')}</span>
           </h1>
         </Reveal>
 
@@ -53,7 +95,7 @@ function Hero({ t, destinations }) {
             <a href="#destinations" className="group flex items-center justify-between border border-forest-dark/15 dark:border-white/20 rounded-full px-6 py-4 hover:border-terracotta transition-colors w-full sm:w-auto">
               <span className="text-sm font-medium uppercase tracking-wide mr-8 text-forest-dark dark:text-sand-light">{t('home.hero2.cta')}</span>
               <div className="w-8 h-8 rounded-full bg-sand-light dark:bg-white/10 flex items-center justify-center group-hover:bg-terracotta group-hover:text-white transition-colors">
-                <i className="bi bi-arrow-down-right text-sm"></i>
+                <i className="bi bi-arrow-down-right text-sm rtl:rotate-180"></i>
               </div>
             </a>
             <Link to="/circuit/" className="btn-ghost !text-forest-dark dark:!text-sand-light !hover:bg-forest-dark/5 dark:!hover:bg-white/10 items-center gap-2">
@@ -156,14 +198,7 @@ function EditorialBreak({ t }) {
 /*  Curated Circuits — bento grid                                       */
 /* ------------------------------------------------------------------ */
 
-function CuratedCircuits({ t }) {
-  const [packs, setPacks] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.packs().then(setPacks).finally(() => setLoading(false));
-  }, []);
-
+function CuratedCircuits({ t, packs, loading }) {
   if (loading) {
     return (
       <section className="py-24 bg-sand-light/50 dark:bg-white/[0.02]">
@@ -188,7 +223,7 @@ function CuratedCircuits({ t }) {
             </div>
             <Link to="/circuit/" className="group flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-forest-dark dark:text-sand-light hover:text-terracotta transition-colors">
               {t('home.circuits.viewAll')}
-              <i className="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+              <i className="bi bi-arrow-right group-hover:translate-x-1 transition-transform rtl:rotate-180"></i>
             </Link>
           </div>
         </Reveal>
@@ -290,11 +325,14 @@ function DestinationsGrid({ t, destinations, loading }) {
 /*  Pilgrimage — dark section                                           */
 /* ------------------------------------------------------------------ */
 
-function PilgrimageSection({ t }) {
+function PilgrimageSection({ t, destinations }) {
   const features = [
     { title: t('home.pilgrimage.feat1Title'), desc: t('home.pilgrimage.feat1Desc') },
     { title: t('home.pilgrimage.feat2Title'), desc: t('home.pilgrimage.feat2Desc') },
   ];
+
+  // Use destination images if available, otherwise use pattern backgrounds
+  const pilgrimageImages = destinations.filter(d => d.image).slice(0, 2);
 
   return (
     <section id="pilgrimage" className="py-28 md:py-36 bg-forest-darker text-sand-light relative overflow-hidden">
@@ -348,24 +386,53 @@ function PilgrimageSection({ t }) {
             </Reveal>
           </div>
 
-          {/* Image collage */}
+          {/* Image collage - using destination images or decorative patterns */}
           <div className="order-1 lg:order-2 relative h-[50vh] lg:h-[72vh] w-full">
-            <Reveal className="absolute top-0 right-0 w-3/4 h-3/4 rounded-3xl overflow-hidden shadow-2xl z-10">
-              <img
-                src="https://images.unsplash.com/photo-1565552643982-27ce6f4ed6f6?auto=format&fit=crop&w=800&q=80"
-                alt="Islamic architecture"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </Reveal>
-            <Reveal delay={2} className="absolute bottom-0 left-0 w-2/3 h-1/2 rounded-3xl overflow-hidden shadow-2xl border-4 border-forest-darker z-20">
-              <img
-                src="https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?auto=format&fit=crop&w=800&q=80"
-                alt="Mosque silhouette at sunset"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </Reveal>
+            {pilgrimageImages.length >= 2 ? (
+              <>
+                <Reveal className="absolute top-0 right-0 w-3/4 h-3/4 rounded-3xl overflow-hidden shadow-2xl z-10">
+                  <img
+                    src={mediaUrl(pilgrimageImages[0].image)}
+                    alt={pilgrimageImages[0].name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </Reveal>
+                <Reveal delay={2} className="absolute bottom-0 left-0 w-2/3 h-1/2 rounded-3xl overflow-hidden shadow-2xl border-4 border-forest-darker z-20">
+                  <img
+                    src={mediaUrl(pilgrimageImages[1].image)}
+                    alt={pilgrimageImages[1].name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </Reveal>
+              </>
+            ) : pilgrimageImages.length === 1 ? (
+              <Reveal className="absolute inset-0 w-full h-full rounded-3xl overflow-hidden shadow-2xl z-10">
+                <img
+                  src={mediaUrl(pilgrimageImages[0].image)}
+                  alt={pilgrimageImages[0].name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </Reveal>
+            ) : (
+              // Decorative fallback with pattern overlays
+              <>
+                <Reveal className="absolute top-0 right-0 w-3/4 h-3/4 rounded-3xl overflow-hidden shadow-2xl z-10 bg-forest-dark/30">
+                  <div className="absolute inset-0 pattern-zellige opacity-50" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <i className="bi bi-moon-stars text-6xl text-terracotta/30" />
+                  </div>
+                </Reveal>
+                <Reveal delay={2} className="absolute bottom-0 left-0 w-2/3 h-1/2 rounded-3xl overflow-hidden shadow-2xl border-4 border-forest-darker z-20 bg-forest-dark/30">
+                  <div className="absolute inset-0 pattern-star opacity-50" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <i className="bi bi-compass text-6xl text-copper/30" />
+                  </div>
+                </Reveal>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -380,12 +447,15 @@ function PilgrimageSection({ t }) {
 function Home() {
   const { t } = useLanguage();
   const [destinations, setDestinations] = useState([]);
+  const [packs, setPacks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api
-      .destinations()
-      .then(setDestinations)
+    Promise.all([api.destinations(), api.packs()])
+      .then(([d, p]) => {
+        setDestinations(d);
+        setPacks(p);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -395,11 +465,11 @@ function Home() {
 
       <EditorialBreak t={t} />
 
-      <CuratedCircuits t={t} />
+      <CuratedCircuits t={t} packs={packs} loading={loading} />
 
       <DestinationsGrid t={t} destinations={destinations} loading={loading} />
 
-      <PilgrimageSection t={t} />
+      <PilgrimageSection t={t} destinations={destinations} />
 
       {/* Weather */}
       <section id="weather" className="relative overflow-hidden bg-forest-darker py-20">
@@ -411,7 +481,7 @@ function Home() {
             <p className="!text-sand-dark">{t('home.weather.subtitle')}</p>
           </div>
           <div className="mt-10">
-            <WeatherWidget initialCity="El Bayadh" />
+            <WeatherWidget initialCity={destinations[0]?.city_name || 'El Bayadh'} />
           </div>
         </div>
       </section>
@@ -426,9 +496,9 @@ function Home() {
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
-            { icon: 'bi-geo-alt', title: 'home.contactAddress', body: 'El Bayadh, Algérie' },
-            { icon: 'bi-envelope', title: 'home.contactEmail', body: 'contact@elbayadhtravels.dz', href: 'mailto:contact@elbayadhtravels.dz' },
-            { icon: 'bi-phone', title: 'home.contactPhone', body: '+213 (0) 00 00 00 00' },
+            { icon: 'bi-geo-alt', title: 'home.contactAddress', body: t('home.contactAddress') },
+            { icon: 'bi-envelope', title: 'home.contactEmail', body: t('home.contactEmail'), href: 'mailto:contact@elbayadhtravels.dz' },
+            { icon: 'bi-phone', title: 'home.contactPhone', body: t('home.contactPhone') },
           ].map((c) => (
             <div key={c.title} className="card p-8 text-center">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-copper/10 text-2xl text-copper">

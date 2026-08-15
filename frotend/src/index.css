@@ -22,6 +22,25 @@
     --c-accent-dark: 150 60 48;
   }
 
+  /* Home V2 — Terres Touareg palette (scoped to the V2 page) */
+  .home-v2-terres {
+    --c-cream: 255 250 245;
+    --c-sand-light: 253 247 240;
+    --c-sand: 240 230 214;
+    --c-sand-dark: 216 205 196;
+    --c-forest: 130 32 32;
+    --c-forest-dark: 88 17 17;
+    --c-forest-darker: 68 10 10;
+    --c-forest-light: 165 60 58;
+    --c-copper: 75 187 188;
+    --c-copper-light: 120 210 211;
+    --c-copper-dark: 45 145 146;
+    --c-gold: 210 168 96;
+    --c-accent: 205 150 78;
+    --c-accent-light: 224 176 112;
+    --c-accent-dark: 176 120 58;
+  }
+
   html[data-variant='zellige'] {
     --c-copper: 201 162 39;
     --c-copper-light: 230 196 90;
@@ -216,6 +235,9 @@
     margin-inline-end: 0.12em;
     margin-top: 0.05em;
     font-weight: 600;
+  }
+  .text-overline-custom {
+    @apply text-terracotta text-[0.65rem] uppercase tracking-[0.2em] font-medium;
   }
 }
 
