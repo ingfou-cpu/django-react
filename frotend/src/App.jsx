@@ -35,6 +35,7 @@ const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess.jsx'));
 const HadjOmra = lazy(() => import('./pages/HadjOmra.jsx'));
 const PaymentCancel = lazy(() => import('./pages/PaymentCancel.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
+const ThreeUIDemo = lazy(() => import('./pages/ThreeUIDemo.jsx'));
 
 /**
  * Home route: renders the current accueil by default, or an alternative
@@ -93,6 +94,7 @@ function App() {
             <Route path="/payment/history/" element={<PaymentHistory />} />
             <Route path="/payment/success/" element={<PaymentSuccess />} />
             <Route path="/payment/cancel/" element={<PaymentCancel />} />
+            <Route path="/threeui-demo/" element={<ThreeUIDemo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

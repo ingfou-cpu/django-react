@@ -5,12 +5,17 @@
       "type": "remote",
       "url": "https://api.aidesigner.ai/api/v1/mcp",
       "enabled": true
+    },
+    "stripe": {
+      "type": "remote",
+      "url": "https://mcp.stripe.com",
+      "enabled": true
     }
   },
   "model": "opencode/big-pickle",
   "agent": {
     "orchestrator": {
-      "model": "opencode/deepseek-v4-flash-free"
+      "model": "opencode/big-pickle"
     },
     "explorer": {
       "model": "opencode/mimo-v2.5-free"

@@ -13,6 +13,36 @@ import Spinner from '../components/Spinner.jsx';
 /*  Hero — asymmetric split                                             */
 /* ------------------------------------------------------------------ */
 
+/* Map a destination to a subtle region pattern from its geography
+   (lat/lng first, city name as a fallback). Not keyed to a fixed id, so
+   new destinations fall into the right motif automatically. */
+function getRegionPattern(d) {
+  if (!d) return 'pattern-region-dunes'; // Algeria / Sahara default
+  const lat = Number(d.latitude);
+  const lng = Number(d.longitude);
+  const name = (d.city_name || d.name || '').toLowerCase();
+
+  // Saudi Arabia — La Mecque (Hadj & Omra)
+  if (
+    name.includes('mecque') ||
+    name.includes('mecca') ||
+    (lat > 16 && lat < 33 && lng > 33 && lng < 57)
+  ) {
+    return 'pattern-region-star';
+  }
+  // Tunisia & coastal Maghreb
+  if (
+    name.includes('tunis') ||
+    name.includes('kairouan') ||
+    name.includes('hammamet') ||
+    (lat > 30 && lat < 38 && lng > 7 && lng < 13)
+  ) {
+    return 'pattern-region-zellige';
+  }
+  // Algeria & the wider Sahara
+  return 'pattern-region-dunes';
+}
+
 function Hero({ t, destinations }) {
   const [imgIdx, setImgIdx] = useState(0);
 
@@ -23,11 +53,14 @@ function Hero({ t, destinations }) {
   }, [destinations.length]);
 
   const d = destinations[imgIdx];
+  const region = getRegionPattern(d);
 
   // Fallback when no destinations available
   if (!destinations.length) {
     return (
       <section className="relative min-h-[100dvh] pt-20 flex flex-col lg:flex-row items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 gap-8 lg:gap-16">
+        <div className="region-pattern pattern-region-dunes pointer-events-none absolute inset-0" aria-hidden="true" />
+
         <div className="w-full lg:w-5/12 flex flex-col justify-center pt-12 lg:pt-0 z-10 order-2 lg:order-1">
           <Reveal>
             <div className="flex items-center gap-3 mb-6">
@@ -57,8 +90,9 @@ function Hero({ t, destinations }) {
             </div>
           </Reveal>
         </div>
-        <div className="w-full lg:w-7/12 h-[55vh] lg:h-[82vh] relative order-1 lg:order-2 mt-8 lg:mt-0">
-          <div className="absolute inset-0 bg-sand-dark/30 dark:bg-white/5 rounded-[2rem] overflow-hidden">
+        <div className="w-full lg:w-7/12 h-[55vh] lg:h-[82vh] relative order-1 lg:order-2 mt-8 lg:mt-0 rounded-[2rem]">
+          <div className="region-pattern pattern-region-dunes absolute inset-0 rounded-[2rem] region-pattern--frame pointer-events-none" aria-hidden="true" />
+          <div className="absolute inset-3 sm:inset-4 bg-sand-dark/30 dark:bg-white/5 rounded-[2rem] overflow-hidden">
             <div className="w-full h-full bg-forest-dark/5 dark:bg-white/5 animate-pulse rounded-[2rem]" />
           </div>
         </div>
@@ -68,6 +102,9 @@ function Hero({ t, destinations }) {
 
   return (
     <section className="relative min-h-[100dvh] pt-20 flex flex-col lg:flex-row items-center max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 gap-8 lg:gap-16">
+      {/* Ultra-faint full-bleed region backdrop — shifts with the destination */}
+      <div key={region} className={`region-pattern ${region} pointer-events-none absolute inset-0`} aria-hidden="true" />
+
       {/* Left content */}
       <div className="w-full lg:w-5/12 flex flex-col justify-center pt-12 lg:pt-0 z-10 order-2 lg:order-1">
         <Reveal>
@@ -119,8 +156,11 @@ function Hero({ t, destinations }) {
       </div>
 
       {/* Right image canvas */}
-      <div className="w-full lg:w-7/12 h-[55vh] lg:h-[82vh] relative order-1 lg:order-2 mt-8 lg:mt-0">
-        <div className="absolute inset-0 bg-sand-dark/30 dark:bg-white/5 rounded-[2rem] overflow-hidden">
+      <div className="w-full lg:w-7/12 h-[55vh] lg:h-[82vh] relative order-1 lg:order-2 mt-8 lg:mt-0 rounded-[2rem]">
+        {/* Region pattern frame — changes with the displayed destination */}
+        <div key={region} className={`region-pattern ${region} absolute inset-0 rounded-[2rem] region-pattern--frame pointer-events-none`} aria-hidden="true" />
+
+        <div className="absolute inset-3 sm:inset-4 rounded-[2rem] overflow-hidden bg-sand-dark/30 dark:bg-white/5">
           {d ? (
             <Link to={`/reselieuChoisi/${d.id}/`} className="block h-full">
               <img
@@ -331,8 +371,10 @@ function PilgrimageSection({ t, destinations }) {
     { title: t('home.pilgrimage.feat2Title'), desc: t('home.pilgrimage.feat2Desc') },
   ];
 
-  // Use destination images if available, otherwise use pattern backgrounds
-  const pilgrimageImages = destinations.filter(d => d.image).slice(0, 2);
+  // Use Hadj/Omra (Mecca) destination images when available, otherwise decorative patterns
+  const pilgrimageImages = destinations
+    .filter((d) => d.image && d.city_name && d.city_name.toLowerCase().includes('mecque'))
+    .slice(0, 2);
 
   return (
     <section id="pilgrimage" className="py-28 md:py-36 bg-forest-darker text-sand-light relative overflow-hidden">
