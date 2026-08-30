@@ -6,6 +6,43 @@ function getCookie(name) {
 }
 export { getCookie };
 
+/** Transform a DRF error body into a single readable string. */
+export function formatError(body, status = 500) {
+  // { detail: "..." } — plain string already
+  if (body && typeof body.detail === 'string') return body.detail;
+  // { error: { field: [msgs], ... } } | { error: "[...]"/"..." }
+  if (body && body.error !== undefined) return stringifyValue(body.error);
+  // { non_field_errors: [...] }
+  if (body && Array.isArray(body.non_field_errors) && body.non_field_errors.length) {
+    return body.non_field_errors.join(', ');
+  }
+  // Any other structured body — flatten known field→message maps
+  if (body && typeof body === 'object') {
+    const entries = Object.entries(body).filter(([, v]) => v != null && v !== '');
+    if (entries.length) {
+      return entries
+        .map(([k, v]) => `${k}: ${arrayToText(v)}`)
+        .join('\n');
+    }
+  }
+  return `HTTP ${status}`;
+}
+
+function arrayToText(v) {
+  return Array.isArray(v) ? v.join(', ') : String(v);
+}
+
+function stringifyValue(v) {
+  if (typeof v === 'string') return v;
+  if (Array.isArray(v)) return v.join(', ');
+  if (v && typeof v === 'object') {
+    const entries = Object.entries(v).filter(([, x]) => x != null && x !== '');
+    if (!entries.length) return 'HTTP 400';
+    return entries.map(([k, x]) => `${k}: ${arrayToText(x)}`).join('\n');
+  }
+  return String(v);
+}
+
 async function request(path, options = {}) {
   const method = options.method || 'GET';
   const headers = { ...(options.headers || {}) };
@@ -25,11 +62,7 @@ async function request(path, options = {}) {
     let detail = `HTTP ${res.status}`;
     try {
       const body = await res.json();
-      detail =
-        body.detail ||
-        body.error ||
-        (body.non_field_errors && body.non_field_errors.join(', ')) ||
-        JSON.stringify(body).slice(0, 200);
+      detail = formatError(body, res.status);
     } catch {
       /* ignore */
     }

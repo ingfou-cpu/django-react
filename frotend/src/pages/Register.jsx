@@ -27,12 +27,17 @@ export default function Register() {
       await register({ username: form.username, password1: form.password1, password2: form.password2 });
       navigate('/profile/');
     } catch (err) {
+      // api.js already formats DRF field errors into readable lines; keep a
+      // tolerant fallback in case the message is still structured JSON.
       let msg = err.message;
       try {
-        const parsed = JSON.parse(err.message);
-        msg = Object.entries(parsed)
-          .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(', ') : v}`)
-          .join('\n');
+        const parsed = JSON.parse(msg);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          msg = Object.entries(parsed)
+            .filter(([, v]) => v != null && v !== '')
+            .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(', ') : v}`)
+            .join('\n');
+        }
       } catch { /* message déjà lisible */ }
       setError(msg);
     } finally {
