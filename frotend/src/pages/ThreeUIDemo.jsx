@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Reveal } from '../components/Reveal';
-import { SectionTitle } from '../components/SectionTitle';
-import { PageHero } from '../components/PageHero';
-import { CtaBanner } from '../components/CtaBanner';
+import Reveal from '../components/Reveal';
+import SectionTitle from '../components/SectionTitle';
+import PageHero from '../components/PageHero';
+import CtaBanner from '../components/CtaBanner';
 import {
   ThreeCanvas,
   Globe,

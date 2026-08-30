@@ -16,6 +16,7 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = '__all__'
+        read_only_fields = ('id', 'check_in_date')
 
 class PackTravelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,6 +42,16 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentRecord
         fields = '__all__'
+        read_only_fields = (
+            'id',
+            'user',
+            'stripe_checkout_session_id',
+            'stripe_payment_intent_id',
+            'stripe_customer_id',
+            'status',
+            'created_at',
+            'updated_at',
+        )
 
 class BlogPostSerializer(serializers.ModelSerializer):
     class Meta:

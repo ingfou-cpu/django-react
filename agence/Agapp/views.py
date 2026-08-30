@@ -22,7 +22,7 @@ from django.urls import reverse_lazy
 from weatherapp.models import SearchHistory
 from weatherapp.views import get_weather_for_city, get_7day_forecast, WMO_DESCRIPTIONS
 from datetime import datetime, timedelta
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from .serializers import DestinationSerializer, HotelSerializer, BookingSerializer, PackTravelSerializer, ReserCircuitSerializer, ContactSerializer, TestimonialSerializer, PaymentRecordSerializer, BlogPostSerializer, BlogCommentSerializer, NewsletterSubscriberSerializer
 from .models import Destination, Hotel, Booking, pack_travel, reser_circuit, Contact, Testimonial, PaymentRecord, BlogPost, BlogComment, NewsletterSubscriber
 #from weatherapp.views import index as weather_index
@@ -1010,44 +1010,93 @@ def set_language(request, lang_code):
         response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
     return response
 
+#-------------------API REST-------------------------------------------------------#
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """Lecture publique ; écriture réservée au staff."""
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.is_staff)
+
+
+class IsAdminOrCreateOnly(permissions.BasePermission):
+    """Création anonyme autorisée (formulaires publics) ; reste réservé au staff."""
+    def has_permission(self, request, view):
+        if request.method == 'POST':
+            return True
+        return bool(request.user and request.user.is_staff)
+
+
+class IsAdminOrReadCreateOnly(permissions.BasePermission):
+    """Lecture + création publiques ; modification/suppression réservées au staff."""
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS or request.method == 'POST':
+            return True
+        return bool(request.user and request.user.is_staff)
+
+
+class IsStaffOrAuthenticatedOrCreateOnly(permissions.BasePermission):
+    """Création publique (formulaires) ; lecture pour tout utilisateur connecté ;
+    modification/suppression réservées au staff."""
+    def has_permission(self, request, view):
+        if request.method == 'POST':
+            return True
+        if request.method in permissions.SAFE_METHODS:
+            return bool(request.user and request.user.is_authenticated)
+        return bool(request.user and request.user.is_staff)
+
+
 class DestinationViewSet(viewsets.ModelViewSet):
     queryset = Destination.objects.all()
     serializer_class = DestinationSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    permission_classes = [IsStaffOrAuthenticatedOrCreateOnly]
 
 class PackTravelViewSet(viewsets.ModelViewSet):
     queryset = pack_travel.objects.all()
     serializer_class = PackTravelSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 class ReserCircuitViewSet(viewsets.ModelViewSet):
     queryset = reser_circuit.objects.all()
     serializer_class = ReserCircuitSerializer   
+    permission_classes = [IsStaffOrAuthenticatedOrCreateOnly]   
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer    
+    permission_classes = [IsAdminOrCreateOnly]
+
 class TestimonialViewSet(viewsets.ModelViewSet):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
+    permission_classes = [IsAdminOrReadCreateOnly]
 
 class PaymentRecordViewSet(viewsets.ModelViewSet):
     queryset = PaymentRecord.objects.all()
     serializer_class = PaymentRecordSerializer  
+    permission_classes = [IsAdminOrReadOnly]
 
 class BlogPostViewSet(viewsets.ModelViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 class BlogCommentViewSet(viewsets.ModelViewSet):
     queryset = BlogComment.objects.all()
     serializer_class = BlogCommentSerializer
+    permission_classes = [IsAdminOrReadCreateOnly]
 
 class NewsletterSubscriberViewSet(viewsets.ModelViewSet):
     queryset = NewsletterSubscriber.objects.all()
     serializer_class = NewsletterSubscriberSerializer   
+    permission_classes = [IsAdminOrCreateOnly]   
 

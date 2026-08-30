@@ -26,6 +26,6 @@ try {
 }
 finally {
     Write-Host "Stopping servers..." -ForegroundColor Yellow
-    Stop-Job $djangoJob, $viteJob -Force
+    Stop-Job $djangoJob, $viteJob
     Remove-Job $djangoJob, $viteJob -Force
 }
